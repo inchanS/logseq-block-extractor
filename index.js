@@ -734,13 +734,80 @@ const main = () => {
         }
     }
 
+    // sortField 유효성 검사 및 기본값 설정 함수
+    async function validateAndSetDefaultSortField(sortField) {
+        // 1. sortField가 비어있거나 null/undefined인 경우 기본값 반환
+        if (!sortField || sortField.trim() === '') {
+            console.log('Sort field is empty, using default: filename');
+            return 'filename';
+        }
+
+        const trimmedSortField = sortField.trim();
+
+        // 2. 'filename'인 경우 바로 반환 (항상 유효)
+        if (trimmedSortField === 'filename') {
+            return 'filename';
+        }
+
+        // 3. 일반적인 시스템 속성들은 바로 허용
+        const commonSystemFields = [
+            'date', 'created-at', 'updated-at', 'tags', 'alias',
+            'created_at', 'updated_at', 'journal-day', 'journal_day'
+        ];
+
+        if (commonSystemFields.includes(trimmedSortField)) {
+            console.log(`Using system field: ${trimmedSortField}`);
+            return trimmedSortField;
+        }
+
+        // 4. 실제 프로퍼티 목록에서 유효성 검사
+        try {
+            const allProperties = await getAllProperties();
+
+            // 대소문자 구분 없이 검사
+            const normalizedField = trimmedSortField.toLowerCase();
+            const validProperty = allProperties.find(prop =>
+                prop.toLowerCase() === normalizedField
+            );
+
+            if (validProperty) {
+                console.log(`Valid property found: ${validProperty}`);
+                return validProperty;
+            }
+
+            // 5. 콜론 포함 형태도 검사
+            const colonField = `:${trimmedSortField}`;
+            const validColonProperty = allProperties.find(prop =>
+                prop.toLowerCase() === colonField.toLowerCase()
+            );
+
+            if (validColonProperty) {
+                console.log(`Valid colon property found: ${validColonProperty}`);
+                return validColonProperty.replace(/^:+/, ''); // 콜론 제거해서 반환
+            }
+
+            // 6. 유효하지 않은 필드인 경우 기본값으로 fallback
+            console.warn(`Invalid sort field: ${trimmedSortField}, falling back to filename`);
+            logseq.UI.showMsg(`Invalid sort field "${trimmedSortField}", using filename instead`, 'warning');
+            return 'filename';
+
+        } catch (error) {
+            console.error('Error validating sort field:', error);
+            console.log('Error occurred during validation, using default: filename');
+            return 'filename';
+        }
+    }
+
     // 메인 추출 함수
     async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrder = 'asc', sortField = 'filename') {
         try {
+            // sortField 유효성 검사 및 기본값 설정
+            const validSortField = await validateAndSetDefaultSortField(sortField);
+
             const hasFilter = filterKeywords && filterKeywords.length > 0;
             const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
             const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
-            const fieldText = sortField === 'filename' ? 'filename' : `property: ${sortField}`;
+            const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
 
             logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} by ${fieldText})`, 'info');
 
@@ -791,43 +858,43 @@ const main = () => {
                         }
 
                         if (processedBlock) {
-                            // 정렬 기준 값 결정
+                            // 정렬 기준 값 결정 부분 수정
                             let sortValue;
-                            if (sortField === 'filename') {
+                            let secondarySortValue = block.page?.name || 'Unnamed Page'; // 2차 정렬용
+
+                            if (validSortField === 'filename') {
                                 sortValue = block.page?.name || 'Unnamed Page';
                             } else {
-                                // property 값 찾기 - 여러 위치에서 시도
+                                // property 값 찾기
                                 const pageProps = block.page?.properties || {};
                                 const blockProps = block.properties || {};
 
-                                // 1. 페이지 프로퍼티에서 찾기
-                                sortValue = pageProps[sortField] ||
-                                    pageProps[`:${sortField}`] || // 콜론 포함된 형태
-                                    // 2. 블록 프로퍼티에서 찾기
-                                    blockProps[sortField] ||
-                                    blockProps[`:${sortField}`] ||
-                                    // 3. 페이지 기본 속성에서 찾기
-                                    block.page?.[sortField] ||
-                                    // 4. 특별한 경우들 처리
-                                    (sortField === 'created-at' ? block.page?.['created-at'] || block['created-at'] : null) ||
-                                    (sortField === 'updated-at' ? block.page?.['updated-at'] || block['updated-at'] : null) ||
-                                    // 5. 기본값
-                                    'No Value';
+                                sortValue = pageProps[validSortField] ||
+                                    pageProps[`:${validSortField}`] ||
+                                    blockProps[validSortField] ||
+                                    blockProps[`:${validSortField}`] ||
+                                    block.page?.[validSortField] ||
+                                    null; // 'No Value' 대신 null 사용
 
                                 // 날짜 형태의 값 처리
-                                if (sortField.includes('date') || sortField.includes('created') || sortField.includes('updated')) {
+                                if (validSortField.includes('date') || validSortField.includes('created') || validSortField.includes('updated')) {
                                     if (typeof sortValue === 'number') {
-                                        // 이미 타임스탬프인 경우
                                         sortValue = sortValue;
-                                    } else if (typeof sortValue === 'string' && sortValue !== 'No Value') {
-                                        // 문자열 날짜를 타임스탬프로 변환 시도
+                                    } else if (typeof sortValue === 'string') {
                                         const dateValue = new Date(sortValue).getTime();
-                                        sortValue = isNaN(dateValue) ? 0 : dateValue;
+                                        sortValue = isNaN(dateValue) ? null : dateValue;
                                     } else {
-                                        sortValue = 0;
+                                        sortValue = null;
                                     }
                                 }
                             }
+
+                            filteredResults.push({
+                                block: processedBlock,
+                                page: block.page,
+                                sortValue: sortValue,
+                                secondarySortValue: secondarySortValue // 2차 정렬값 추가
+                            });
                         }
                     }
 
@@ -845,32 +912,38 @@ const main = () => {
             }
 
             // 정렬 기준에 따라 정렬
-            if (sortField === 'filename') {
-                // 파일명 정렬 (문자열)
+            if (validSortField === 'filename') {
+                // 파일명 정렬
                 if (sortOrder === 'desc') {
                     filteredResults.sort((a, b) => b.sortValue.localeCompare(a.sortValue, 'ko', {numeric: true}));
                 } else {
                     filteredResults.sort((a, b) => a.sortValue.localeCompare(b.sortValue, 'ko', {numeric: true}));
                 }
             } else {
-                // 기타 필드 정렬 (숫자 또는 문자열)
-                if (sortOrder === 'desc') {
-                    filteredResults.sort((a, b) => {
+                // 프로퍼티 정렬 (프로퍼티 없는 경우 filename으로 2차 정렬)
+                filteredResults.sort((a, b) => {
+                    // 둘 다 프로퍼티 값이 있는 경우
+                    if (a.sortValue !== null && b.sortValue !== null) {
                         if (typeof a.sortValue === 'number' && typeof b.sortValue === 'number') {
-                            return b.sortValue - a.sortValue;
+                            return sortOrder === 'desc' ? b.sortValue - a.sortValue : a.sortValue - b.sortValue;
                         } else {
-                            return String(b.sortValue).localeCompare(String(a.sortValue), 'ko', {numeric: true});
+                            const comparison = String(a.sortValue).localeCompare(String(b.sortValue), 'ko', {numeric: true});
+                            return sortOrder === 'desc' ? -comparison : comparison;
                         }
-                    });
-                } else {
-                    filteredResults.sort((a, b) => {
-                        if (typeof a.sortValue === 'number' && typeof b.sortValue === 'number') {
-                            return a.sortValue - b.sortValue;
-                        } else {
-                            return String(a.sortValue).localeCompare(String(b.sortValue), 'ko', {numeric: true});
-                        }
-                    });
-                }
+                    }
+
+                    // 한쪽만 프로퍼티 값이 있는 경우 (프로퍼티 있는 것을 우선)
+                    if (a.sortValue !== null && b.sortValue === null) {
+                        return sortOrder === 'desc' ? -1 : 1;
+                    }
+                    if (a.sortValue === null && b.sortValue !== null) {
+                        return sortOrder === 'desc' ? 1 : -1;
+                    }
+
+                    // 둘 다 프로퍼티 값이 없는 경우 filename으로 정렬
+                    const comparison = a.secondarySortValue.localeCompare(b.secondarySortValue, 'ko', {numeric: true});
+                    return sortOrder === 'desc' ? -comparison : comparison;
+                });
             }
 
             if (filteredResults.length === 0) {
@@ -900,7 +973,7 @@ const main = () => {
 
             // 파일 다운로드
             const filterSuffix = hasFilter ? `_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}` : '_all_blocks';
-            const sortSuffix = sortField !== 'filename' ? `_sortBy_${sortField}` : '';
+            const sortSuffix = validSortField !== 'filename' ? `_sortBy_${validSortField}` : '';
             const filename = `${primaryTag}${filterSuffix}${sortSuffix}.md`;
             downloadMarkdown(markdown, filename);
 
