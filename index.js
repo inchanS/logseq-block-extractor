@@ -111,7 +111,7 @@ const main = () => {
                   <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
                          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
                                 font-size: 14px; color: #333333;">
-                  <small style="color: #666; font-size: 12px;">비워두면 참조된 모든 블록을 가져옵니다</small>
+                  <small style="color: #666; font-size: 12px;">If the filter keyword is “A, B, C”, it will find all reference blocks that contain A or B or C.</small>
                 </div>
                 
                 <div style="text-align: right;">
