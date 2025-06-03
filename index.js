@@ -15,10 +15,15 @@ const main = () => {
     logseq.App.registerUIItem('toolbar', {
         key: 'block-extractor',
         template: `
-      <a class="button" data-on-click="showExtractDialog" title="Extract Filtered Blocks" style="padding: 5px 10px;">
-        📋 Extract
-      </a>
-    `
+  <a class="button" data-on-click="showExtractDialog" title="Extract Blocks" 
+     style="padding: 4px 6px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7,10 12,15 17,10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+  </a>
+`
     });
 
     // 전역 모델 제공
@@ -57,7 +62,7 @@ const main = () => {
             }
 
             // UI 닫기
-            logseq.provideUI({ key: 'block-extractor-input', template: '' });
+            logseq.provideUI({key: 'block-extractor-input', template: ''});
 
             // 추출 실행
             await extractFilteredBlocks(primaryTag, keywords);
@@ -65,7 +70,7 @@ const main = () => {
 
         cancelDialog: () => {
             console.log('cancelDialog called');
-            logseq.provideUI({ key: 'block-extractor-input', template: '' });
+            logseq.provideUI({key: 'block-extractor-input', template: ''});
         }
     });
 
@@ -298,7 +303,7 @@ const main = () => {
 
     function downloadMarkdown(content, filename) {
         try {
-            const blob = new Blob([content], { type: 'text/markdown;charset=utf-8;' });
+            const blob = new Blob([content], {type: 'text/markdown;charset=utf-8;'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
