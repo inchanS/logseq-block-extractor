@@ -1,6 +1,15 @@
 const main = () => {
     console.log('Block Extractor Plugin loaded');
 
+    // 커맨드 팔레트에 등록 (단축키는 사용자가 설정)
+    logseq.App.registerCommandPalette({
+        key: "extract-filtered-blocks",
+        label: "Extract Filtered Blocks",
+        desc: "Extract blocks with hierarchical filtering",
+    }, async () => {
+        await showInputDialog();
+    });
+
     // 슬래시 커맨드로 등록
     logseq.Editor.registerSlashCommand('Extract Filtered Blocks', async () => {
         await showInputDialog();
