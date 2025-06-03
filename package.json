@@ -1,6 +1,6 @@
 {
   "name": "logseq-block-extractor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Extract and filter blocks with hierarchical structure",
   "main": "index.js",
   "logseq": {

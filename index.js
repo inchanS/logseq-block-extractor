@@ -48,18 +48,12 @@ const main = () => {
                 return;
             }
 
-            if (!filterKeywords) {
-                logseq.UI.showMsg("Filter keywords are required", 'warning');
-                return;
-            }
-
-            const keywords = filterKeywords.split(',')
-                .map(k => k.trim())
-                .filter(k => k.length > 0);
-
-            if (keywords.length === 0) {
-                logseq.UI.showMsg("Please provide valid filter keywords", 'warning');
-                return;
+            // 필터 키워드가 없으면 빈 배열로 처리 (모든 블록 포함)
+            let keywords = [];
+            if (filterKeywords && filterKeywords.length > 0) {
+                keywords = filterKeywords.split(',')
+                    .map(k => k.trim())
+                    .filter(k => k.length > 0);
             }
 
             // UI 닫기
@@ -93,14 +87,15 @@ const main = () => {
             
             <div style="margin-bottom: 15px;">
               <label style="display: block; margin-bottom: 5px; font-weight: bold;">Primary Tag:</label>
-              <input type="text" id="primaryTag" placeholder="e.g., 아기" 
+              <input type="text" id="primaryTag" placeholder="e.g., TagName" 
                      style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
             
             <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Filter Keywords (comma separated):</label>
-              <input type="text" id="filterKeywords" placeholder="e.g., 언어영역,인지영역" 
+              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Filter Keywords (comma separated, optional):</label>
+              <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
                      style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+              <small style="color: #666; font-size: 12px;">비워두면 참조된 모든 블록을 가져옵니다</small>
             </div>
             
             <div style="text-align: right;">
@@ -127,13 +122,15 @@ const main = () => {
         }
     }
 
-    // 메인 추출 함수
-// 메인 추출 함수 (수정됨)
+    // 메인 추출 함수 (수정됨)
     async function extractFilteredBlocks(primaryTag, filterKeywords) {
         try {
-            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag}`, 'info');
+            const hasFilter = filterKeywords && filterKeywords.length > 0;
+            const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
 
-            // Datalog 쿼리 실행 (올바른 API 사용)
+            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText}`, 'info');
+
+            // Datalog 쿼리 실행
             const results = await logseq.DB.datascriptQuery(`
       [:find (pull ?b [:block/uuid :block/content :block/created-at 
                        {:block/page [:block/name :block/created-at :block/journal-day 
@@ -163,18 +160,25 @@ const main = () => {
                         continue;
                     }
 
-                    // 하위 블록을 포함한 완전한 블록 정보 가져오기 (올바른 API 사용)
+                    // 하위 블록을 포함한 완전한 블록 정보 가져오기
                     const fullBlock = await logseq.Editor.getBlock(block.uuid, {
                         includeChildren: true
                     });
 
                     if (fullBlock) {
-                        // 계층 구조를 유지하면서 키워드 필터링 적용
-                        const filteredBlock = filterBlocksByKeyword(fullBlock, filterKeywords);
+                        let processedBlock;
 
-                        if (filteredBlock) {
+                        if (hasFilter) {
+                            // 필터가 있으면 키워드 필터링 적용
+                            processedBlock = filterBlocksByKeyword(fullBlock, filterKeywords);
+                        } else {
+                            // 필터가 없으면 모든 블록 포함
+                            processedBlock = fullBlock;
+                        }
+
+                        if (processedBlock) {
                             filteredResults.push({
-                                block: filteredBlock,
+                                block: processedBlock,
                                 page: {
                                     name: block.page?.name || 'Unnamed Page'
                                 },
@@ -200,15 +204,21 @@ const main = () => {
             filteredResults.sort((a, b) => b.epochCreatedAt - a.epochCreatedAt);
 
             if (filteredResults.length === 0) {
-                logseq.UI.showMsg("No blocks found matching the filter criteria.", 'warning');
+                logseq.UI.showMsg("No blocks found matching the criteria.", 'warning');
                 return;
             }
 
             // 마크다운 생성
-            let markdown = `# ${primaryTag} 참조 블록 중 "${filterKeywords.join(', ')}" 계층 필터링\n\n`;
+            let markdown = `# ${primaryTag} 참조 블록 추출\n\n`;
             markdown += `검색 조건:\n`;
             markdown += `1. "${primaryTag}" 태그를 참조하는 블록\n`;
-            markdown += `2. 계층 구조를 유지하되 "${filterKeywords.join(', ')}" 관련 블록과 그 하위 블록 모두 표시\n\n`;
+
+            if (hasFilter) {
+                markdown += `2. 계층 구조를 유지하되 "${filterKeywords.join(', ')}" 관련 블록과 그 하위 블록 모두 표시\n\n`;
+            } else {
+                markdown += `2. 모든 블록과 그 하위 블록 표시 (필터 없음)\n\n`;
+            }
+
             markdown += `총 ${filteredResults.length}개 블록 발견\n\n`;
 
             filteredResults.forEach((item, index) => {
@@ -218,10 +228,11 @@ const main = () => {
             });
 
             // 파일 다운로드
-            const filename = `${primaryTag}_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}.md`;
+            const filterSuffix = hasFilter ? `_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}` : '_all_blocks';
+            const filename = `${primaryTag}${filterSuffix}.md`;
             downloadMarkdown(markdown, filename);
 
-            logseq.UI.showMsg(`Successfully extracted ${filteredResults.length} filtered blocks!`, 'success');
+            logseq.UI.showMsg(`Successfully extracted ${filteredResults.length} blocks!`, 'success');
 
         } catch (error) {
             console.error('Error extracting blocks:', error);
