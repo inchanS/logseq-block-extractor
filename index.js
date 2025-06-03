@@ -47,15 +47,19 @@ const main = () => {
             // DOM 요소 직접 접근 시도
             const primaryTagInput = parent.document.querySelector('#primaryTag');
             const filterKeywordsInput = parent.document.querySelector('#filterKeywords');
+            const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked');
 
             console.log('primaryTagInput:', primaryTagInput);
             console.log('filterKeywordsInput:', filterKeywordsInput);
+            console.log('sortOrderRadio:', sortOrderRadio);
 
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
+            const sortOrder = sortOrderRadio?.value || 'asc'; // 기본값: 오름차순
 
             console.log('primaryTag:', primaryTag);
             console.log('filterKeywords:', filterKeywords);
+            console.log('sortOrder:', sortOrder);
 
             if (!primaryTag) {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
@@ -73,9 +77,10 @@ const main = () => {
             // UI 닫기
             logseq.provideUI({key: 'block-extractor-input', template: ''});
 
-            // 추출 실행
-            await extractFilteredBlocks(primaryTag, keywords);
-        },
+            // 추출 실행 (정렬 순서 파라미터 추가)
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder);
+        }
+        ,
 
         cancelDialog: () => {
             console.log('cancelDialog called');
@@ -106,12 +111,28 @@ const main = () => {
                                 font-size: 14px; color: #333333;">
                 </div>
                 
-                <div style="margin-bottom: 20px;">
+                <div style="margin-bottom: 15px;">
                   <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Filter Keywords (comma separated, optional):</label>
                   <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
                          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
                                 font-size: 14px; color: #333333;">
-                  <small style="color: #666; font-size: 12px;">If the filter keyword is “A, B, C”, it will find all reference blocks that contain A or B or C.</small>
+                  <small style="color: #666; font-size: 12px;">If the filter keyword is "A, B, C", it will find all reference blocks that contain A or B or C.</small>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Sort Order:</label>
+                  <div style="display: flex; gap: 20px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
+                      <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
+                             style="margin-right: 6px; cursor: pointer;">
+                      Ascending (A → Z)
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
+                      <input type="radio" id="sortDesc" name="sortOrder" value="desc" 
+                             style="margin-right: 6px; cursor: pointer;">
+                      Descending (Z → A)
+                    </label>
+                  </div>
                 </div>
                 
                 <div style="text-align: right;">
@@ -161,6 +182,11 @@ const main = () => {
                         color: #cccccc !important;
                         opacity: 0.6 !important;
                     }
+                    
+                    /* 라디오 버튼 스타일링 */
+                    input[type="radio"]:checked {
+                        accent-color: #4CAF50;
+                    }
                 `;
 
                     // parent 문서에 스타일 추가
@@ -182,13 +208,14 @@ const main = () => {
         }
     }
 
-    // 메인 추출 함수 (수정됨)
-    async function extractFilteredBlocks(primaryTag, filterKeywords) {
+    // 메인 추출 함수
+    async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrder = 'asc') {
         try {
             const hasFilter = filterKeywords && filterKeywords.length > 0;
             const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
+            const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
 
-            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText}`, 'info');
+            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} order)`, 'info');
 
             // Datalog 쿼리 실행
             const results = await logseq.DB.datascriptQuery(`
@@ -260,8 +287,14 @@ const main = () => {
                 }
             }
 
-            // 파일명 정렬 (알파벳 및 숫자 순)
-            filteredResults.sort((a, b) => a.fileName.localeCompare(b.fileName, 'ko', { numeric: true }));
+            // 파일명 정렬 (선택된 순서에 따라)
+            if (sortOrder === 'desc') {
+                // 내림차순 정렬 (Z → A)
+                filteredResults.sort((a, b) => b.fileName.localeCompare(a.fileName, 'ko', {numeric: true}));
+            } else {
+                // 오름차순 정렬 (A → Z) - 기본값
+                filteredResults.sort((a, b) => a.fileName.localeCompare(b.fileName, 'ko', {numeric: true}));
+            }
 
             if (filteredResults.length === 0) {
                 logseq.UI.showMsg("No blocks found matching the criteria.", 'warning');
