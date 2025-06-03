@@ -35,6 +35,188 @@ const main = () => {
 `
     });
 
+    // 모든 페이지 목록을 가져오는 함수
+    async function getAllPages() {
+        try {
+            const pages = await logseq.DB.datascriptQuery(`
+            [:find (pull ?p [:block/name])
+             :where [?p :block/name]]
+        `);
+
+            if (!pages || !Array.isArray(pages)) {
+                console.warn('No pages found or invalid response format');
+                return [];
+            }
+
+            return pages
+                .map(page => page[0]?.name)
+                .filter(name => name && typeof name === 'string' && name.trim());
+        } catch (error) {
+            console.error('Error fetching pages:', error);
+            logseq.UI.showMsg('페이지 목록을 가져오는 중 오류가 발생했습니다.', 'warning');
+            return [];
+        }
+    }
+
+    // 자동완성 설정 함수
+    async function setupAutoComplete() {
+        const allPages = await getAllPages();
+
+        // Primary Tag 필드 자동완성
+        setupFieldAutoComplete('primaryTag', 'primaryTagSuggestions', allPages);
+
+        // Filter Keywords 필드 자동완성 (쉼표로 구분된 여러 키워드 지원)
+        setupFieldAutoComplete('filterKeywords', 'filterKeywordsSuggestions', allPages, true);
+    }
+
+    // 개별 필드 자동완성 설정
+// 개별 필드 자동완성 설정
+    function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords = false) {
+        const input = parent.document.getElementById(inputId) || document.getElementById(inputId);
+        const suggestions = parent.document.getElementById(suggestionsId) || document.getElementById(suggestionsId);
+
+        if (!input || !suggestions) {
+            console.warn(`Could not find elements: ${inputId}, ${suggestionsId}`);
+            return;
+        }
+
+        // 기존 이벤트 리스너 제거 (중복 방지)
+        input.removeEventListener('input', input._autoCompleteInputHandler);
+        input.removeEventListener('keydown', input._autoCompleteKeydownHandler);
+
+        let currentSuggestionIndex = -1;
+
+        // 이벤트 핸들러를 변수에 저장하여 나중에 제거할 수 있도록 함
+        const inputHandler = (e) => {
+            // 기존 input 이벤트 로직
+            const value = e.target.value;
+            let searchTerm = value;
+
+            if (multipleKeywords) {
+                const lastCommaIndex = value.lastIndexOf(',');
+                if (lastCommaIndex !== -1) {
+                    searchTerm = value.substring(lastCommaIndex + 1).trim();
+                }
+            }
+
+            if (searchTerm.length < 2) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            const filteredPages = pages.filter(page =>
+                page.toLowerCase().includes(searchTerm.toLowerCase())
+            ).slice(0, 10);
+
+            if (filteredPages.length === 0) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            suggestions.innerHTML = filteredPages.map((page, index) => `
+            <div class="suggestion-item" data-index="${index}" data-page="${page}"
+                 style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;
+                        ${index === currentSuggestionIndex ? 'background-color: #f0f0f0;' : ''}">
+                ${page}
+            </div>
+        `).join('');
+
+            suggestions.style.display = 'block';
+            currentSuggestionIndex = -1;
+
+            // 클릭 이벤트 추가
+            suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const selectedPage = item.dataset.page;
+                    insertSelectedPage(input, selectedPage, multipleKeywords);
+                    suggestions.style.display = 'none';
+                });
+
+                item.addEventListener('mouseenter', () => {
+                    suggestions.querySelectorAll('.suggestion-item').forEach(i => {
+                        i.style.backgroundColor = '';
+                    });
+                    item.style.backgroundColor = '#f0f0f0';
+                    currentSuggestionIndex = parseInt(item.dataset.index);
+                });
+            });
+        };
+
+        const keydownHandler = (e) => {
+            // 기존 keydown 이벤트 로직
+            const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
+
+            if (suggestions.style.display === 'none' || suggestionItems.length === 0) {
+                return;
+            }
+
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    currentSuggestionIndex = Math.min(currentSuggestionIndex + 1, suggestionItems.length - 1);
+                    updateSuggestionHighlight(suggestionItems, currentSuggestionIndex);
+                    break;
+
+                case 'ArrowUp':
+                    e.preventDefault();
+                    currentSuggestionIndex = Math.max(currentSuggestionIndex - 1, 0);
+                    updateSuggestionHighlight(suggestionItems, currentSuggestionIndex);
+                    break;
+
+                case 'Enter':
+                    e.preventDefault();
+                    if (currentSuggestionIndex >= 0 && suggestionItems[currentSuggestionIndex]) {
+                        const selectedPage = suggestionItems[currentSuggestionIndex].dataset.page;
+                        insertSelectedPage(input, selectedPage, multipleKeywords);
+                        suggestions.style.display = 'none';
+                    }
+                    break;
+
+                case 'Escape':
+                    suggestions.style.display = 'none';
+                    currentSuggestionIndex = -1;
+                    break;
+            }
+        };
+
+        // 핸들러를 input 요소에 저장하여 나중에 제거할 수 있도록 함
+        input._autoCompleteInputHandler = inputHandler;
+        input._autoCompleteKeydownHandler = keydownHandler;
+
+        // 이벤트 리스너 등록
+        input.addEventListener('input', inputHandler);
+        input.addEventListener('keydown', keydownHandler);
+    }
+
+    // 선택된 페이지 삽입
+    function insertSelectedPage(input, selectedPage, multipleKeywords) {
+        if (multipleKeywords) {
+            const value = input.value;
+            const lastCommaIndex = value.lastIndexOf(',');
+
+            if (lastCommaIndex !== -1) {
+                // 마지막 쉼표 이후의 텍스트를 선택된 페이지로 교체
+                input.value = value.substring(0, lastCommaIndex + 1) + ' ' + selectedPage;
+            } else {
+                input.value = selectedPage;
+            }
+        } else {
+            input.value = selectedPage;
+        }
+
+        input.focus();
+        // 커서를 끝으로 이동
+        input.setSelectionRange(input.value.length, input.value.length);
+    }
+
+    // 제안 하이라이트 업데이트
+    function updateSuggestionHighlight(suggestionItems, currentIndex) {
+        suggestionItems.forEach((item, index) => {
+            item.style.backgroundColor = index === currentIndex ? '#f0f0f0' : '';
+        });
+    }
+
+
     // 전역 모델 제공
     logseq.provideModel({
         showExtractDialog: async () => {
@@ -108,18 +290,28 @@ const main = () => {
                           min-width: 400px;">
                 <h3 style="margin-top: 0; color: #333;">Block Extractor Settings</h3>
                 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 15px; position: relative;">
                   <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Primary Tag:</label>
                   <input type="text" id="primaryTag" placeholder="e.g., TagName" 
                          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
                                 font-size: 14px; color: #333333;">
+                  <div id="primaryTagSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                                         background: dimgray; border: 1px solid #ddd; 
+                                                         border-top: none; border-radius: 0 0 4px 4px; 
+                                                         max-height: 200px; overflow-y: auto; 
+                                                         display: none; z-index: 1001;"></div>
                 </div>
                 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 15px; position: relative;">
                   <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Filter Keywords (comma separated, optional):</label>
                   <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
                          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
                                 font-size: 14px; color: #333333;">
+                  <div id="filterKeywordsSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                                             background: dimgray; border: 1px solid #ddd; 
+                                                             border-top: none; border-radius: 0 0 4px 4px; 
+                                                             max-height: 200px; overflow-y: auto; 
+                                                             display: none; z-index: 1001;"></div>
                   <small style="color: #666; font-size: 12px;">If the filter keyword is "A, B, C", it will find all reference blocks that contain A or B or C.</small>
                 </div>
                 
@@ -167,6 +359,9 @@ const main = () => {
 
             setTimeout(() => {
                 try {
+                    // 자동완성기능 초기화
+                    setupAutoComplete();
+
                     const style = document.createElement('style');
                     style.textContent = `
                     #primaryTag::placeholder,
