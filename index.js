@@ -84,42 +84,88 @@ const main = () => {
             logseq.provideUI({
                 key,
                 template: `
-          <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                      background: white; border: 2px solid #ccc; border-radius: 8px; 
-                      padding: 20px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                      min-width: 400px;">
-            <h3 style="margin-top: 0; color: #333;">Block Extractor Settings</h3>
-            
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Primary Tag:</label>
-              <input type="text" id="primaryTag" placeholder="e.g., TagName" 
-                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: bold;">Filter Keywords (comma separated, optional):</label>
-              <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
-                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-              <small style="color: #666; font-size: 12px;">비워두면 참조된 모든 블록을 가져옵니다</small>
-            </div>
-            
-            <div style="text-align: right;">
-              <button data-on-click="cancelDialog" style="padding: 8px 16px; margin-right: 10px; 
-                                          background: #f5f5f5; border: 1px solid #ddd; 
-                                          border-radius: 4px; cursor: pointer;">Cancel</button>
-              <button data-on-click="executeExtraction" style="padding: 8px 16px; background: #4CAF50; 
-                                           color: white; border: none; border-radius: 4px; 
-                                           cursor: pointer;">Extract Blocks</button>
-            </div>
-          </div>
-          <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                      background: rgba(0,0,0,0.5); z-index: 999;"></div>
-        `,
+              <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                          background: white; border: 2px solid #ccc; border-radius: 8px; 
+                          padding: 20px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                          min-width: 400px;">
+                <h3 style="margin-top: 0; color: #333;">Block Extractor Settings</h3>
+                
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Primary Tag:</label>
+                  <input type="text" id="primaryTag" placeholder="e.g., TagName" 
+                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
+                                font-size: 14px; color: #333333;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Filter Keywords (comma separated, optional):</label>
+                  <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2 (leave empty for all blocks)" 
+                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
+                                font-size: 14px; color: #333333;">
+                  <small style="color: #666; font-size: 12px;">비워두면 참조된 모든 블록을 가져옵니다</small>
+                </div>
+                
+                <div style="text-align: right;">
+                  <button data-on-click="cancelDialog" style="padding: 8px 16px; margin-right: 10px; 
+                                              background: #f5f5f5; border: 1px solid #ddd; 
+                                              border-radius: 4px; cursor: pointer; color: #333;">Cancel</button>
+                  <button data-on-click="executeExtraction" style="padding: 8px 16px; background: #4CAF50; 
+                                               color: white; border: none; border-radius: 4px; 
+                                               cursor: pointer;">Extract Blocks</button>
+                </div>
+              </div>
+              <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                          background: rgba(0,0,0,0.5); z-index: 999;"></div>
+            `,
                 style: {
                     width: '100vw',
                     height: '100vh'
                 }
             });
+
+            // DOM이 로드된 후 CSS 동적 주입
+            setTimeout(() => {
+                try {
+                    // CSS 스타일 동적으로 추가
+                    const style = document.createElement('style');
+                    style.textContent = `
+                    #primaryTag::placeholder,
+                    #filterKeywords::placeholder {
+                        color: #cccccc !important;
+                        opacity: 0.6 !important;
+                    }
+                    
+                    #primaryTag::-webkit-input-placeholder,
+                    #filterKeywords::-webkit-input-placeholder {
+                        color: #cccccc !important;
+                        opacity: 0.6 !important;
+                    }
+                    
+                    #primaryTag::-moz-placeholder,
+                    #filterKeywords::-moz-placeholder {
+                        color: #cccccc !important;
+                        opacity: 0.6 !important;
+                    }
+                    
+                    #primaryTag:-ms-input-placeholder,
+                    #filterKeywords:-ms-input-placeholder {
+                        color: #cccccc !important;
+                        opacity: 0.6 !important;
+                    }
+                `;
+
+                    // parent 문서에 스타일 추가
+                    if (parent.document.head) {
+                        parent.document.head.appendChild(style);
+                    } else if (document.head) {
+                        document.head.appendChild(style);
+                    }
+
+                    console.log('CSS style injected');
+                } catch (error) {
+                    console.error('Error injecting CSS:', error);
+                }
+            }, 100);
 
         } catch (error) {
             console.error('Error in showInputDialog:', error);
