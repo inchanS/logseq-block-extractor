@@ -15,10 +15,6 @@
     "url": "https://github.com/inchanS/logseq-block-extractor.git"
   },
   "keywords": ["logseq", "plugin", "references", "blocks", "filter", "export"],
-  "author": {
-    "name": "Inchan Song",
-    "email": "song@inchan.dev",
-    "url": "https://inchan.dev"
-  },
-"license": "MIT"
+  "author": "Inchan Song",
+  "license": "MIT"
 }
