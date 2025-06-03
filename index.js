@@ -58,15 +58,184 @@ const main = () => {
         }
     }
 
+    // 모든 프로퍼티 목록을 가져오는 함수
+    async function getAllProperties() {
+        try {
+            console.log('Fetching properties from current graph...');
+
+            let allPropertyKeys = new Set();
+
+            // 방법 1: 단순한 블록 프로퍼티 쿼리
+            try {
+                const blockProperties = await logseq.DB.datascriptQuery(`
+                [:find ?props
+                 :where
+                 [?b :block/properties ?props]
+                 [(> (count ?props) 0)]]
+            `);
+
+                console.log('Block properties query result:', blockProperties);
+
+                if (blockProperties && Array.isArray(blockProperties)) {
+                    blockProperties.forEach(propResult => {
+                        if (propResult && propResult[0]) {
+                            const props = propResult[0];
+                            console.log('Processing props object:', props);
+
+                            // props가 객체인 경우 키들을 추출
+                            if (typeof props === 'object' && props !== null) {
+                                Object.keys(props).forEach(key => {
+                                    // 콜론으로 시작하는 키워드 형태 처리
+                                    let cleanKey = key;
+                                    if (typeof key === 'string') {
+                                        cleanKey = key.replace(/^:+/, '');
+                                    }
+
+                                    if (cleanKey && cleanKey.length > 0) {
+                                        allPropertyKeys.add(cleanKey);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Block properties query failed:', error);
+            }
+
+            // 방법 2: 페이지 프로퍼티 쿼리
+            try {
+                const pageProperties = await logseq.DB.datascriptQuery(`
+                [:find ?props
+                 :where
+                 [?p :block/name]
+                 [?p :block/properties ?props]
+                 [(> (count ?props) 0)]]
+            `);
+
+                console.log('Page properties query result:', pageProperties);
+
+                if (pageProperties && Array.isArray(pageProperties)) {
+                    pageProperties.forEach(propResult => {
+                        if (propResult && propResult[0]) {
+                            const props = propResult[0];
+
+                            if (typeof props === 'object' && props !== null) {
+                                Object.keys(props).forEach(key => {
+                                    let cleanKey = key;
+                                    if (typeof key === 'string') {
+                                        cleanKey = key.replace(/^:+/, '');
+                                    }
+
+                                    if (cleanKey && cleanKey.length > 0) {
+                                        allPropertyKeys.add(cleanKey);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Page properties query failed:', error);
+            }
+
+            // 방법 3: 대안 - 현재 페이지의 프로퍼티 직접 확인
+            try {
+                const currentPage = await logseq.Editor.getCurrentPage();
+                if (currentPage && currentPage.properties) {
+                    Object.keys(currentPage.properties).forEach(key => {
+                        let cleanKey = key.replace(/^:+/, '');
+                        if (cleanKey && cleanKey.length > 0) {
+                            allPropertyKeys.add(cleanKey);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Current page properties check failed:', error);
+            }
+
+            // 시스템 프로퍼티 제외 및 정리
+            const actualProperties = Array.from(allPropertyKeys)
+                .filter(key => {
+                    return !key.startsWith('block/') &&
+                        !key.startsWith('page/') &&
+                        !key.startsWith('db/') &&
+                        !key.startsWith('file/') &&
+                        key.length > 0 &&
+                        key !== 'uuid' &&
+                        key !== 'id';
+                })
+                .sort();
+
+            console.log(`Found ${actualProperties.length} properties:`, actualProperties);
+
+            // 기본 프로퍼티들 추가 (일반적으로 사용되는 것들)
+            const commonProperties = ['date', 'created-at', 'updated-at', 'tags', 'alias'];
+            commonProperties.forEach(prop => {
+                if (!actualProperties.includes(prop)) {
+                    actualProperties.push(prop);
+                }
+            });
+
+            // filename을 첫 번째에 추가
+            const finalProperties = ['filename', ...actualProperties.sort()];
+
+            if (finalProperties.length <= 1) {
+                console.warn('Very few properties found. Adding common defaults.');
+                return ['filename', 'date', 'created-at', 'updated-at', 'tags'];
+            }
+
+            return finalProperties;
+
+        } catch (error) {
+            console.error('Critical error in getAllProperties:', error);
+            logseq.UI.showMsg('프로퍼티 목록을 가져오는 중 오류가 발생했습니다.', 'error');
+            return ['filename', 'date', 'created-at', 'updated-at', 'tags'];
+        }
+    }
+
     // 자동완성 설정 함수
     async function setupAutoComplete() {
+        // 디버깅용 함수 - 실제 프로퍼티 구조 확인
+        async function debugProperties() {
+            try {
+                // 단순한 쿼리로 실제 데이터 확인
+                const result = await logseq.DB.datascriptQuery(`
+            [:find ?b ?props
+             :where
+             [?b :block/properties ?props]
+             :limit 5]
+        `);
+
+                console.log('Debug - Raw property data:', result);
+
+                if (result && result.length > 0) {
+                    result.forEach((item, index) => {
+                        console.log(`Item ${index}:`, item);
+                        if (item[1]) {
+                            console.log(`Properties structure:`, typeof item[1], item[1]);
+                            if (typeof item[1] === 'object') {
+                                console.log(`Property keys:`, Object.keys(item[1]));
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Debug query failed:', error);
+            }
+        }
+
         const allPages = await getAllPages();
+        const allProperties = await getAllProperties();
 
         // Primary Tag 필드 자동완성
         setupFieldAutoComplete('primaryTag', 'primaryTagSuggestions', allPages);
 
         // Filter Keywords 필드 자동완성 (쉼표로 구분된 여러 키워드 지원)
         setupFieldAutoComplete('filterKeywords', 'filterKeywordsSuggestions', allPages, true);
+
+        // Sort Field 자동완성 추가
+        setupFieldAutoComplete('sortField', 'sortFieldSuggestions', allProperties);
     }
 
     // 자동완성 필드 색상
@@ -253,6 +422,7 @@ const main = () => {
                 // 자동완성 목록이 표시되어 있는지 확인
                 const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
                 const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
+                const sortFieldSuggestions = dialog.querySelector('#sortFieldSuggestions'); // 추가
 
                 const isPrimarySuggestionsVisible = primarySuggestions &&
                     primarySuggestions.style.display !== 'none' &&
@@ -262,8 +432,12 @@ const main = () => {
                     filterSuggestions.style.display !== 'none' &&
                     filterSuggestions.querySelectorAll('.suggestion-item').length > 0;
 
+                const isSortFieldSuggestionsVisible = sortFieldSuggestions &&
+                    sortFieldSuggestions.style.display !== 'none' &&
+                    sortFieldSuggestions.querySelectorAll('.suggestion-item').length > 0; // 추가
+
                 // 자동완성이 활성화된 상태에서는 Tab 순환을 하지 않음
-                if (isPrimarySuggestionsVisible || isFilterSuggestionsVisible) {
+                if (isPrimarySuggestionsVisible || isFilterSuggestionsVisible || isSortFieldSuggestionsVisible) {
                     return;
                 }
 
@@ -413,11 +587,16 @@ const main = () => {
                   <small style="color: #666; font-size: 12px;">If the filter keyword is "A, B, C", it will find all reference blocks that contain A or B or C.</small>
                 </div>
                 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 15px; position: relative;">
                   <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Sort Field (optional):</label>
                   <input type="text" id="sortField" placeholder="e.g., date, created-at (leave empty for filename)" 
                          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
                                 font-size: 14px; color: #333333;">
+                  <div id="sortFieldSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                                       background: dimgray; border: 1px solid #ddd; 
+                                                       border-top: none; border-radius: 0 0 4px 4px; 
+                                                       max-height: 200px; overflow-y: auto; 
+                                                       display: none; z-index: 1001;"></div>
                   <small style="color: #666; font-size: 12px;">Default: filename. For other fields, enter property name like 'date', 'created-at', etc.</small>
                 </div>
                 
@@ -471,6 +650,7 @@ const main = () => {
                             // 자동완성 목록이 표시되어 있는지 확인
                             const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
                             const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
+                            const sortFieldSuggestions = dialog.querySelector('#sortFieldSuggestions'); // 추가
 
                             const isPrimarySuggestionsVisible = primarySuggestions &&
                                 primarySuggestions.style.display !== 'none' &&
@@ -480,8 +660,12 @@ const main = () => {
                                 filterSuggestions.style.display !== 'none' &&
                                 filterSuggestions.querySelectorAll('.suggestion-item').length > 0;
 
+                            const isSortFieldSuggestionsVisible = sortFieldSuggestions &&
+                                sortFieldSuggestions.style.display !== 'none' &&
+                                sortFieldSuggestions.querySelectorAll('.suggestion-item').length > 0; // 추가
+
                             // 자동완성이 활성화된 상태에서는 방향키 이벤트를 차단하지 않음
-                            if ((isPrimarySuggestionsVisible || isFilterSuggestionsVisible) &&
+                            if ((isPrimarySuggestionsVisible || isFilterSuggestionsVisible || isSortFieldSuggestionsVisible) &&
                                 (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape')) {
                                 // 자동완성 관련 키는 전파를 허용
                                 return;
@@ -612,21 +796,38 @@ const main = () => {
                             if (sortField === 'filename') {
                                 sortValue = block.page?.name || 'Unnamed Page';
                             } else {
-                                // 다른 필드인 경우 properties에서 찾거나 페이지 속성에서 찾기
-                                sortValue = block.page?.properties?.[sortField] ||
-                                    block.page?.[sortField] ||
-                                    block.page?.['created-at'] ||
-                                    Date.now();
-                            }
+                                // property 값 찾기 - 여러 위치에서 시도
+                                const pageProps = block.page?.properties || {};
+                                const blockProps = block.properties || {};
 
-                            filteredResults.push({
-                                block: processedBlock,
-                                page: {
-                                    name: block.page?.name || 'Unnamed Page'
-                                },
-                                sortValue: sortValue,
-                                sortField: sortField
-                            });
+                                // 1. 페이지 프로퍼티에서 찾기
+                                sortValue = pageProps[sortField] ||
+                                    pageProps[`:${sortField}`] || // 콜론 포함된 형태
+                                    // 2. 블록 프로퍼티에서 찾기
+                                    blockProps[sortField] ||
+                                    blockProps[`:${sortField}`] ||
+                                    // 3. 페이지 기본 속성에서 찾기
+                                    block.page?.[sortField] ||
+                                    // 4. 특별한 경우들 처리
+                                    (sortField === 'created-at' ? block.page?.['created-at'] || block['created-at'] : null) ||
+                                    (sortField === 'updated-at' ? block.page?.['updated-at'] || block['updated-at'] : null) ||
+                                    // 5. 기본값
+                                    'No Value';
+
+                                // 날짜 형태의 값 처리
+                                if (sortField.includes('date') || sortField.includes('created') || sortField.includes('updated')) {
+                                    if (typeof sortValue === 'number') {
+                                        // 이미 타임스탬프인 경우
+                                        sortValue = sortValue;
+                                    } else if (typeof sortValue === 'string' && sortValue !== 'No Value') {
+                                        // 문자열 날짜를 타임스탬프로 변환 시도
+                                        const dateValue = new Date(sortValue).getTime();
+                                        sortValue = isNaN(dateValue) ? 0 : dateValue;
+                                    } else {
+                                        sortValue = 0;
+                                    }
+                                }
+                            }
                         }
                     }
 
