@@ -70,7 +70,6 @@ const main = () => {
     }
 
     // 개별 필드 자동완성 설정
-// 개별 필드 자동완성 설정
     function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords = false) {
         const input = parent.document.getElementById(inputId) || document.getElementById(inputId);
         const suggestions = parent.document.getElementById(suggestionsId) || document.getElementById(suggestionsId);
@@ -81,14 +80,20 @@ const main = () => {
         }
 
         // 기존 이벤트 리스너 제거 (중복 방지)
-        input.removeEventListener('input', input._autoCompleteInputHandler);
-        input.removeEventListener('keydown', input._autoCompleteKeydownHandler);
+        const handlerMap = {
+            'input': '_autoCompleteInputHandler',
+            'keydown': '_autoCompleteKeydownHandler'
+        };
+
+        Object.entries(handlerMap).forEach(([eventType, handlerProp]) => {
+            if (input[handlerProp]) {
+                input.removeEventListener(eventType, input[handlerProp]);
+            }
+        });
 
         let currentSuggestionIndex = -1;
 
-        // 이벤트 핸들러를 변수에 저장하여 나중에 제거할 수 있도록 함
         const inputHandler = (e) => {
-            // 기존 input 이벤트 로직
             const value = e.target.value;
             let searchTerm = value;
 
@@ -126,10 +131,16 @@ const main = () => {
 
             // 클릭 이벤트 추가
             suggestions.querySelectorAll('.suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const selectedPage = item.dataset.page;
                     insertSelectedPage(input, selectedPage, multipleKeywords);
                     suggestions.style.display = 'none';
+                    // 입력 필드로 포커스 복귀
+                    setTimeout(() => {
+                        input.focus();
+                    }, 10);
                 });
 
                 item.addEventListener('mouseenter', () => {
@@ -143,49 +154,133 @@ const main = () => {
         };
 
         const keydownHandler = (e) => {
-            // 기존 keydown 이벤트 로직
             const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
 
+            // 자동완성 목록이 표시되지 않았거나 항목이 없으면 일반 동작 허용
             if (suggestions.style.display === 'none' || suggestionItems.length === 0) {
-                return;
+                return; // 이벤트를 차단하지 않고 그대로 진행
             }
 
+            // 자동완성이 활성화된 상태에서만 특별한 키 처리
             switch (e.key) {
                 case 'ArrowDown':
                     e.preventDefault();
+                    e.stopPropagation();
                     currentSuggestionIndex = Math.min(currentSuggestionIndex + 1, suggestionItems.length - 1);
                     updateSuggestionHighlight(suggestionItems, currentSuggestionIndex);
                     break;
 
                 case 'ArrowUp':
                     e.preventDefault();
+                    e.stopPropagation();
                     currentSuggestionIndex = Math.max(currentSuggestionIndex - 1, 0);
                     updateSuggestionHighlight(suggestionItems, currentSuggestionIndex);
                     break;
 
                 case 'Enter':
                     e.preventDefault();
+                    e.stopPropagation();
                     if (currentSuggestionIndex >= 0 && suggestionItems[currentSuggestionIndex]) {
                         const selectedPage = suggestionItems[currentSuggestionIndex].dataset.page;
                         insertSelectedPage(input, selectedPage, multipleKeywords);
                         suggestions.style.display = 'none';
+                        // 입력 필드로 포커스 유지
+                        setTimeout(() => {
+                            input.focus();
+                            input.setSelectionRange(input.value.length, input.value.length);
+                        }, 10);
                     }
                     break;
 
                 case 'Escape':
+                    e.preventDefault();
+                    e.stopPropagation();
                     suggestions.style.display = 'none';
                     currentSuggestionIndex = -1;
+                    // 입력 필드로 포커스 복귀
+                    input.focus();
+                    break;
+
+                default:
+                    // 다른 키들은 기본 동작 허용
                     break;
             }
         };
 
-        // 핸들러를 input 요소에 저장하여 나중에 제거할 수 있도록 함
+        // 핸들러를 input 요소에 저장
         input._autoCompleteInputHandler = inputHandler;
         input._autoCompleteKeydownHandler = keydownHandler;
 
         // 이벤트 리스너 등록
         input.addEventListener('input', inputHandler);
         input.addEventListener('keydown', keydownHandler);
+
+        // 입력 필드 포커스 이벤트 추가
+        input.addEventListener('focus', (e) => {
+            e.stopPropagation();
+        });
+
+        input.addEventListener('blur', (e) => {
+            // 자동완성 목록 클릭 시 blur 방지
+            setTimeout(() => {
+                if (!suggestions.contains(document.activeElement)) {
+                    suggestions.style.display = 'none';
+                }
+            }, 150);
+        });
+    }
+
+    // 다이얼로그 내 포커스 관리 함수
+    function maintainDialogFocus() {
+        const dialog = parent.document.getElementById('block-extractor-dialog') ||
+            document.getElementById('block-extractor-dialog');
+
+        if (!dialog) return;
+
+        // 다이얼로그 내의 모든 포커스 가능한 요소들
+        const focusableElements = dialog.querySelectorAll(
+            'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (focusableElements.length === 0) return;
+
+        // Tab 키 순환 처리 (자동완성이 활성화되지 않은 경우에만)
+        dialog.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                // 자동완성 목록이 표시되어 있는지 확인
+                const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
+                const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
+
+                const isPrimarySuggestionsVisible = primarySuggestions &&
+                    primarySuggestions.style.display !== 'none' &&
+                    primarySuggestions.querySelectorAll('.suggestion-item').length > 0;
+
+                const isFilterSuggestionsVisible = filterSuggestions &&
+                    filterSuggestions.style.display !== 'none' &&
+                    filterSuggestions.querySelectorAll('.suggestion-item').length > 0;
+
+                // 자동완성이 활성화된 상태에서는 Tab 순환을 하지 않음
+                if (isPrimarySuggestionsVisible || isFilterSuggestionsVisible) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+                let nextIndex;
+
+                if (e.shiftKey) {
+                    // Shift + Tab: 이전 요소로
+                    nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+                } else {
+                    // Tab: 다음 요소로
+                    nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+                }
+
+                focusableElements[nextIndex].focus();
+            }
+        });
     }
 
     // 선택된 페이지 삽입
@@ -284,7 +379,7 @@ const main = () => {
             logseq.provideUI({
                 key,
                 template: `
-              <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+              <div id="block-extractor-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                           background: white; border: 2px solid #ccc; border-radius: 8px; 
                           padding: 20px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
                           min-width: 400px;">
@@ -359,43 +454,80 @@ const main = () => {
 
             setTimeout(() => {
                 try {
-                    // 자동완성기능 초기화
+                    // 자동완성 기능 초기화
                     setupAutoComplete();
+                    maintainDialogFocus();
 
+                    // 다이얼로그 컨테이너에 선택적 키보드 이벤트 차단 추가
+                    const dialog = parent.document.getElementById('block-extractor-dialog') ||
+                        document.getElementById('block-extractor-dialog');
+
+                    if (dialog) {
+                        // 선택적 키보드 이벤트 차단 - 자동완성이 활성화되지 않은 경우에만
+                        dialog.addEventListener('keydown', (e) => {
+                            // 자동완성 목록이 표시되어 있는지 확인
+                            const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
+                            const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
+
+                            const isPrimarySuggestionsVisible = primarySuggestions &&
+                                primarySuggestions.style.display !== 'none' &&
+                                primarySuggestions.querySelectorAll('.suggestion-item').length > 0;
+
+                            const isFilterSuggestionsVisible = filterSuggestions &&
+                                filterSuggestions.style.display !== 'none' &&
+                                filterSuggestions.querySelectorAll('.suggestion-item').length > 0;
+
+                            // 자동완성이 활성화된 상태에서는 방향키 이벤트를 차단하지 않음
+                            if ((isPrimarySuggestionsVisible || isFilterSuggestionsVisible) &&
+                                (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape')) {
+                                // 자동완성 관련 키는 전파를 허용
+                                return;
+                            }
+
+                            // 다른 키들은 외부로 전파 차단
+                            e.stopPropagation();
+                        }, true);
+
+                        dialog.addEventListener('keyup', (e) => {
+                            // keyup은 항상 차단 (덜 중요)
+                            e.stopPropagation();
+                        }, true);
+
+                        dialog.addEventListener('keypress', (e) => {
+                            // keypress는 항상 차단 (덜 중요)
+                            e.stopPropagation();
+                        }, true);
+
+                        // 첫 번째 입력 필드에 자동 포커스
+                        const firstInput = dialog.querySelector('#primaryTag');
+                        if (firstInput) {
+                            setTimeout(() => {
+                                firstInput.focus();
+                            }, 100);
+                        }
+                    }
+
+                    // CSS 스타일 추가
                     const style = document.createElement('style');
                     style.textContent = `
-                    #primaryTag::placeholder,
-                    #filterKeywords::placeholder,
-                    #sortField::placeholder {
-                        color: #cccccc !important;
-                        opacity: 0.6 !important;
-                    }
-                    
-                    #primaryTag::-webkit-input-placeholder,
-                    #filterKeywords::-webkit-input-placeholder,
-                    #sortField::-webkit-input-placeholder {
-                        color: #cccccc !important;
-                        opacity: 0.6 !important;
-                    }
-                    
-                    #primaryTag::-moz-placeholder,
-                    #filterKeywords::-moz-placeholder,
-                    #sortField::-moz-placeholder {
-                        color: #cccccc !important;
-                        opacity: 0.6 !important;
-                    }
-                    
-                    #primaryTag:-ms-input-placeholder,
-                    #filterKeywords:-ms-input-placeholder,
-                    #sortField:-ms-input-placeholder {
-                        color: #cccccc !important;
-                        opacity: 0.6 !important;
-                    }
-                    
-                    input[type="radio"]:checked {
-                        accent-color: #4CAF50;
-                    }
-                `;
+            #primaryTag::placeholder,
+            #filterKeywords::placeholder,
+            #sortField::placeholder {
+                color: #cccccc !important;
+                opacity: 0.6 !important;
+            }
+            
+            /* 자동완성 목록 스타일 개선 */
+            .suggestion-item:hover {
+                background-color: #f0f0f0 !important;
+            }
+            
+            /* 다이얼로그 내부 포커스 스타일 */
+            #block-extractor-dialog input:focus {
+                outline: 2px solid #4CAF50;
+                outline-offset: -2px;
+            }
+        `;
 
                     if (parent.document.head) {
                         parent.document.head.appendChild(style);
@@ -403,9 +535,9 @@ const main = () => {
                         document.head.appendChild(style);
                     }
 
-                    console.log('CSS style injected');
+                    console.log('CSS style injected and focus management setup');
                 } catch (error) {
-                    console.error('Error injecting CSS:', error);
+                    console.error('Error in dialog setup:', error);
                 }
             }, 100);
 
