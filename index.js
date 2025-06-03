@@ -69,6 +69,9 @@ const main = () => {
         setupFieldAutoComplete('filterKeywords', 'filterKeywordsSuggestions', allPages, true);
     }
 
+    // 자동완성 필드 색상
+    const autoCompleteSelectFieldColor = '#3c7059';
+
     // 개별 필드 자동완성 설정
     function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords = false) {
         const input = parent.document.getElementById(inputId) || document.getElementById(inputId);
@@ -147,7 +150,7 @@ const main = () => {
                     suggestions.querySelectorAll('.suggestion-item').forEach(i => {
                         i.style.backgroundColor = '';
                     });
-                    item.style.backgroundColor = '#f0f0f0';
+                    item.style.backgroundColor = autoCompleteSelectFieldColor;
                     currentSuggestionIndex = parseInt(item.dataset.index);
                 });
             });
@@ -307,7 +310,7 @@ const main = () => {
     // 제안 하이라이트 업데이트
     function updateSuggestionHighlight(suggestionItems, currentIndex) {
         suggestionItems.forEach((item, index) => {
-            item.style.backgroundColor = index === currentIndex ? '#f0f0f0' : '';
+            item.style.backgroundColor = index === currentIndex ? autoCompleteSelectFieldColor : '';
         });
     }
 
@@ -519,7 +522,7 @@ const main = () => {
             
             /* 자동완성 목록 스타일 개선 */
             .suggestion-item:hover {
-                background-color: #f0f0f0 !important;
+                background-color: ${autoCompleteSelectFieldColor} !important;
             }
             
             /* 다이얼로그 내부 포커스 스타일 */
