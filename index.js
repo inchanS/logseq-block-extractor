@@ -47,18 +47,22 @@ const main = () => {
             // DOM 요소 직접 접근 시도
             const primaryTagInput = parent.document.querySelector('#primaryTag');
             const filterKeywordsInput = parent.document.querySelector('#filterKeywords');
+            const sortFieldInput = parent.document.querySelector('#sortField');
             const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked');
 
             console.log('primaryTagInput:', primaryTagInput);
             console.log('filterKeywordsInput:', filterKeywordsInput);
+            console.log('sortFieldInput:', sortFieldInput);
             console.log('sortOrderRadio:', sortOrderRadio);
 
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
+            const sortField = sortFieldInput?.value?.trim() || 'filename'; // 기본값: filename
             const sortOrder = sortOrderRadio?.value || 'asc'; // 기본값: 오름차순
 
             console.log('primaryTag:', primaryTag);
             console.log('filterKeywords:', filterKeywords);
+            console.log('sortField:', sortField);
             console.log('sortOrder:', sortOrder);
 
             if (!primaryTag) {
@@ -77,8 +81,8 @@ const main = () => {
             // UI 닫기
             logseq.provideUI({key: 'block-extractor-input', template: ''});
 
-            // 추출 실행 (정렬 순서 파라미터 추가)
-            await extractFilteredBlocks(primaryTag, keywords, sortOrder);
+            // 추출 실행 (정렬 필드와 순서 파라미터 추가)
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField);
         }
         ,
 
@@ -119,6 +123,14 @@ const main = () => {
                   <small style="color: #666; font-size: 12px;">If the filter keyword is "A, B, C", it will find all reference blocks that contain A or B or C.</small>
                 </div>
                 
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Sort Field (optional):</label>
+                  <input type="text" id="sortField" placeholder="e.g., date, created-at (leave empty for filename)" 
+                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
+                                font-size: 14px; color: #333333;">
+                  <small style="color: #666; font-size: 12px;">Default: filename. For other fields, enter property name like 'date', 'created-at', etc.</small>
+                </div>
+                
                 <div style="margin-bottom: 20px;">
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Sort Order:</label>
                   <div style="display: flex; gap: 20px;">
@@ -153,43 +165,43 @@ const main = () => {
                 }
             });
 
-            // DOM이 로드된 후 CSS 동적 주입
             setTimeout(() => {
                 try {
-                    // CSS 스타일 동적으로 추가
                     const style = document.createElement('style');
                     style.textContent = `
                     #primaryTag::placeholder,
-                    #filterKeywords::placeholder {
+                    #filterKeywords::placeholder,
+                    #sortField::placeholder {
                         color: #cccccc !important;
                         opacity: 0.6 !important;
                     }
                     
                     #primaryTag::-webkit-input-placeholder,
-                    #filterKeywords::-webkit-input-placeholder {
+                    #filterKeywords::-webkit-input-placeholder,
+                    #sortField::-webkit-input-placeholder {
                         color: #cccccc !important;
                         opacity: 0.6 !important;
                     }
                     
                     #primaryTag::-moz-placeholder,
-                    #filterKeywords::-moz-placeholder {
+                    #filterKeywords::-moz-placeholder,
+                    #sortField::-moz-placeholder {
                         color: #cccccc !important;
                         opacity: 0.6 !important;
                     }
                     
                     #primaryTag:-ms-input-placeholder,
-                    #filterKeywords:-ms-input-placeholder {
+                    #filterKeywords:-ms-input-placeholder,
+                    #sortField:-ms-input-placeholder {
                         color: #cccccc !important;
                         opacity: 0.6 !important;
                     }
                     
-                    /* 라디오 버튼 스타일링 */
                     input[type="radio"]:checked {
                         accent-color: #4CAF50;
                     }
                 `;
 
-                    // parent 문서에 스타일 추가
                     if (parent.document.head) {
                         parent.document.head.appendChild(style);
                     } else if (document.head) {
@@ -209,13 +221,14 @@ const main = () => {
     }
 
     // 메인 추출 함수
-    async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrder = 'asc') {
+    async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrder = 'asc', sortField = 'filename') {
         try {
             const hasFilter = filterKeywords && filterKeywords.length > 0;
             const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
             const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
+            const fieldText = sortField === 'filename' ? 'filename' : `property: ${sortField}`;
 
-            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} order)`, 'info');
+            logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} by ${fieldText})`, 'info');
 
             // Datalog 쿼리 실행
             const results = await logseq.DB.datascriptQuery(`
@@ -264,12 +277,25 @@ const main = () => {
                         }
 
                         if (processedBlock) {
+                            // 정렬 기준 값 결정
+                            let sortValue;
+                            if (sortField === 'filename') {
+                                sortValue = block.page?.name || 'Unnamed Page';
+                            } else {
+                                // 다른 필드인 경우 properties에서 찾거나 페이지 속성에서 찾기
+                                sortValue = block.page?.properties?.[sortField] ||
+                                    block.page?.[sortField] ||
+                                    block.page?.['created-at'] ||
+                                    Date.now();
+                            }
+
                             filteredResults.push({
                                 block: processedBlock,
                                 page: {
                                     name: block.page?.name || 'Unnamed Page'
                                 },
-                                fileName: block.page?.name || 'Unnamed Page'
+                                sortValue: sortValue,
+                                sortField: sortField
                             });
                         }
                     }
@@ -287,13 +313,33 @@ const main = () => {
                 }
             }
 
-            // 파일명 정렬 (선택된 순서에 따라)
-            if (sortOrder === 'desc') {
-                // 내림차순 정렬 (Z → A)
-                filteredResults.sort((a, b) => b.fileName.localeCompare(a.fileName, 'ko', {numeric: true}));
+            // 정렬 기준에 따라 정렬
+            if (sortField === 'filename') {
+                // 파일명 정렬 (문자열)
+                if (sortOrder === 'desc') {
+                    filteredResults.sort((a, b) => b.sortValue.localeCompare(a.sortValue, 'ko', {numeric: true}));
+                } else {
+                    filteredResults.sort((a, b) => a.sortValue.localeCompare(b.sortValue, 'ko', {numeric: true}));
+                }
             } else {
-                // 오름차순 정렬 (A → Z) - 기본값
-                filteredResults.sort((a, b) => a.fileName.localeCompare(b.fileName, 'ko', {numeric: true}));
+                // 기타 필드 정렬 (숫자 또는 문자열)
+                if (sortOrder === 'desc') {
+                    filteredResults.sort((a, b) => {
+                        if (typeof a.sortValue === 'number' && typeof b.sortValue === 'number') {
+                            return b.sortValue - a.sortValue;
+                        } else {
+                            return String(b.sortValue).localeCompare(String(a.sortValue), 'ko', {numeric: true});
+                        }
+                    });
+                } else {
+                    filteredResults.sort((a, b) => {
+                        if (typeof a.sortValue === 'number' && typeof b.sortValue === 'number') {
+                            return a.sortValue - b.sortValue;
+                        } else {
+                            return String(a.sortValue).localeCompare(String(b.sortValue), 'ko', {numeric: true});
+                        }
+                    });
+                }
             }
 
             if (filteredResults.length === 0) {
@@ -307,11 +353,12 @@ const main = () => {
             markdown += `1. "${primaryTag}" 태그를 참조하는 블록\n`;
 
             if (hasFilter) {
-                markdown += `2. 계층 구조를 유지하되 "${filterKeywords.join(', ')}" 관련 블록과 그 하위 블록 모두 표시\n\n`;
+                markdown += `2. 계층 구조를 유지하되 "${filterKeywords.join(', ')}" 관련 블록과 그 하위 블록 모두 표시\n`;
             } else {
-                markdown += `2. 모든 블록과 그 하위 블록 표시 (필터 없음)\n\n`;
+                markdown += `2. 모든 블록과 그 하위 블록 표시 (필터 없음)\n`;
             }
 
+            markdown += `3. 정렬 기준: ${fieldText} (${sortText})\n\n`;
             markdown += `총 ${filteredResults.length}개 블록 발견\n\n`;
 
             filteredResults.forEach((item, index) => {
@@ -322,7 +369,8 @@ const main = () => {
 
             // 파일 다운로드
             const filterSuffix = hasFilter ? `_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}` : '_all_blocks';
-            const filename = `${primaryTag}${filterSuffix}.md`;
+            const sortSuffix = sortField !== 'filename' ? `_sortBy_${sortField}` : '';
+            const filename = `${primaryTag}${filterSuffix}${sortSuffix}.md`;
             downloadMarkdown(markdown, filename);
 
             logseq.UI.showMsg(`Successfully extracted ${filteredResults.length} blocks!`, 'success');
@@ -333,7 +381,6 @@ const main = () => {
         }
     }
 
-    // 나머지 함수들은 동일
     function blockContainsKeywords(block, keywords) {
         if (!block || !block.content) return false;
 
