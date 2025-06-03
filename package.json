@@ -1,0 +1,16 @@
+{
+  "name": "logseq-block-extractor",
+  "version": "0.0.1",
+  "description": "Extract and filter blocks with hierarchical structure",
+  "main": "index.js",
+  "logseq": {
+    "id": "logseq-block-extractor",
+    "title": "Block Extractor"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["logseq", "plugin", "blocks", "filter", "export"],
+  "author": "Inchan Song",
+  "license": "MIT"
+}
