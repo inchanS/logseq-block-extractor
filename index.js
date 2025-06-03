@@ -242,7 +242,7 @@ const main = () => {
                                 page: {
                                     name: block.page?.name || 'Unnamed Page'
                                 },
-                                epochCreatedAt: block.page?.['created-at'] || Date.now()
+                                fileName: block.page?.name || 'Unnamed Page'
                             });
                         }
                     }
@@ -260,8 +260,8 @@ const main = () => {
                 }
             }
 
-            // 날짜순 정렬 (최신순)
-            filteredResults.sort((a, b) => b.epochCreatedAt - a.epochCreatedAt);
+            // 파일명 정렬 (알파벳 및 숫자 순)
+            filteredResults.sort((a, b) => a.fileName.localeCompare(b.fileName, 'ko', { numeric: true }));
 
             if (filteredResults.length === 0) {
                 logseq.UI.showMsg("No blocks found matching the criteria.", 'warning');
