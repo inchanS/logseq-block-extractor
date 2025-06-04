@@ -3,20 +3,37 @@
   "version": "0.3.1",
   "description": "Extract and filter blocks with hierarchical structure",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "logseq": {
     "id": "logseq-block-extractor",
     "title": "Block Extractor",
     "icon": "./icon.png"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/inchanS/logseq-block-extractor.git"
   },
-  "keywords": ["logseq", "plugin", "references", "blocks", "filter", "export"],
+  "keywords": [
+    "logseq",
+    "plugin",
+    "references",
+    "blocks",
+    "filter",
+    "export"
+  ],
   "author": "Inchan Song",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@logseq/libs": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
 }
