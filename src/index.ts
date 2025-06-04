@@ -49,11 +49,13 @@ const main = () => {
             const filterKeywordsInput = parent.document.querySelector('#filterKeywords') as HTMLInputElement | null;
             const sortFieldInput = parent.document.querySelector('#sortField') as HTMLInputElement | null;
             const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked') as HTMLInputElement | null;
+            const filterModeRadio = parent.document.querySelector('input[name="filterMode"]:checked') as HTMLInputElement | null;
 
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
             const sortField = sortFieldInput?.value?.trim() || 'filename';
             const sortOrder = sortOrderRadio?.value || 'asc';
+            const filterMode = filterModeRadio?.value as 'and' | 'or' || 'or';
 
             if (!primaryTag) {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
@@ -68,7 +70,7 @@ const main = () => {
             }
 
             logseq.provideUI({key: 'block-extractor-input', template: ''});
-            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField);
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode);
         },
 
         cancelDialog: () => {

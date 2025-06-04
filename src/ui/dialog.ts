@@ -37,7 +37,22 @@ export async function showInputDialog() {
                                                              border-top: none; border-radius: 0 0 4px 4px; 
                                                              max-height: 200px; overflow-y: auto; 
                                                              display: none; z-index: 1001;"></div>
-                  <small style="color: #666; font-size: 12px;">If the filter keyword is "A, B, C", it will find all reference blocks that contain A or B or C.</small>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Filter Mode: (For multiple keywords)</label>
+                  <div style="display: flex; gap: 20px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
+                      <input type="radio" id="filterModeOr" name="filterMode" value="or" checked 
+                             style="margin-right: 6px; cursor: pointer;">
+                      Any (OR)
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
+                      <input type="radio" id="filterModeAnd" name="filterMode" value="and" 
+                             style="margin-right: 6px; cursor: pointer;">
+                      All (AND)
+                    </label>
+                  </div>
                 </div>
                 
                 <div style="margin-bottom: 15px; position: relative;">
@@ -55,7 +70,7 @@ export async function showInputDialog() {
                 
                 <div style="margin-bottom: 20px;">
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Sort Order:</label>
-                  <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; gap: 20px;">
                     <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
                       <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
                              style="margin-right: 6px; cursor: pointer;">

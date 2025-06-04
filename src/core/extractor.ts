@@ -4,7 +4,13 @@ import {sortResults, getSortValue} from './sort';
 import {generateMarkdown, downloadMarkdown, generateFilename} from '../utils/markdown';
 import {validateAndSetDefaultSortField} from "../utils/validation";
 
-export async function extractFilteredBlocks(primaryTag: string, filterKeywords: string[], sortOrder = 'asc', sortField = 'filename') {
+export async function extractFilteredBlocks(
+    primaryTag: string,
+    filterKeywords: string[] = [],
+    sortOrder: string = 'asc',
+    sortField: string = 'filename',
+    filterMode: 'and' | 'or' = 'or'
+) {
     try {
         const validSortField = await validateAndSetDefaultSortField(sortField);
 
@@ -45,7 +51,7 @@ export async function extractFilteredBlocks(primaryTag: string, filterKeywords: 
                     let processedBlock;
 
                     if (hasFilter) {
-                        processedBlock = filterBlocksByKeyword(fullBlock, filterKeywords);
+                        processedBlock = filterBlocksByKeyword(fullBlock, filterKeywords, filterMode);
                     } else {
                         processedBlock = fullBlock;
                     }
