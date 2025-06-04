@@ -106,7 +106,7 @@ export async function getAllProperties() {
 
         // 시스템 프로퍼티 제외 및 정리
         const actualProperties = Array.from(allPropertyKeys)
-            .filter(key => {
+            .filter((key: any) => {
                 return !key.startsWith('block/') &&
                     !key.startsWith('page/') &&
                     !key.startsWith('db/') &&
@@ -140,7 +140,7 @@ export async function getAllProperties() {
     }
 }
 
-export async function getBlocksReferencingTag(primaryTag) {
+export async function getBlocksReferencingTag(primaryTag: string) {
     return await logseq.DB.datascriptQuery(`
       [:find (pull ?b [:block/uuid :block/content :block/created-at 
                        {:block/page [:block/name :block/created-at :block/journal-day 

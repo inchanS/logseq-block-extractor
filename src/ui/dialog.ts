@@ -1,4 +1,4 @@
-import {autoCompleteSelectFieldColor, setupAutoComplete} from './autocomplete.js';
+import {autoCompleteSelectFieldColor, setupAutoComplete} from './autocomplete';
 
 export async function showInputDialog() {
     try {
@@ -95,7 +95,7 @@ export async function showInputDialog() {
                 injectDialogStyles();
 
                 const firstInput = (parent.document || document).querySelector('#primaryTag');
-                if (firstInput) {
+                if (firstInput instanceof HTMLInputElement) {
                     setTimeout(() => firstInput.focus(), 100);
                 }
             } catch (error) {
@@ -103,9 +103,13 @@ export async function showInputDialog() {
             }
         }, 100);
 
-    } catch (error) {
+    } catch (error:unknown) {
         console.error('Error in showInputDialog:', error);
-        logseq.UI.showMsg(`Error: ${error.message}`, 'error');
+        if (error instanceof Error) {
+            logseq.UI.showMsg(`Error: ${error.message}`, 'error');
+        } else {
+            logseq.UI.showMsg(`Error: ${String(error)}`, 'error');
+        }
     }
 }
 
@@ -123,9 +127,9 @@ function maintainDialogFocus() {
 
     dialog.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
-            const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
-            const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
-            const sortFieldSuggestions = dialog.querySelector('#sortFieldSuggestions');
+            const primarySuggestions: any = dialog.querySelector('#primaryTagSuggestions')!;
+            const filterSuggestions: any = dialog.querySelector('#filterKeywordsSuggestions');
+            const sortFieldSuggestions: any = dialog.querySelector('#sortFieldSuggestions');
 
             const isPrimarySuggestionsVisible = primarySuggestions &&
                 primarySuggestions.style.display !== 'none' &&
@@ -146,16 +150,20 @@ function maintainDialogFocus() {
             e.preventDefault();
             e.stopPropagation();
 
-            const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+            const focusableArray = Array.from(focusableElements);
+            const currentIndex = focusableArray.indexOf(document.activeElement as Element);
             let nextIndex;
 
             if (e.shiftKey) {
-                nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+                nextIndex = currentIndex <= 0 ? focusableArray.length - 1 : currentIndex - 1;
             } else {
-                nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+                nextIndex = currentIndex >= focusableArray.length - 1 ? 0 : currentIndex + 1;
             }
 
-            focusableElements[nextIndex].focus();
+            const nextElement = focusableArray[nextIndex];
+            if (nextElement instanceof HTMLElement) {
+                nextElement.focus();
+            }
         }
     });
 }
@@ -167,9 +175,9 @@ function setupDialogEventHandlers() {
     if (!dialog) return;
 
     dialog.addEventListener('keydown', (e) => {
-        const primarySuggestions = dialog.querySelector('#primaryTagSuggestions');
-        const filterSuggestions = dialog.querySelector('#filterKeywordsSuggestions');
-        const sortFieldSuggestions = dialog.querySelector('#sortFieldSuggestions');
+        const primarySuggestions: any = dialog.querySelector('#primaryTagSuggestions');
+        const filterSuggestions: any = dialog.querySelector('#filterKeywordsSuggestions');
+        const sortFieldSuggestions: any = dialog.querySelector('#sortFieldSuggestions');
 
         const isPrimarySuggestionsVisible = primarySuggestions &&
             primarySuggestions.style.display !== 'none' &&

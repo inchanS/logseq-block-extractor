@@ -1,4 +1,4 @@
-import { getAllPages, getAllProperties } from '../data/query.js';
+import {getAllPages, getAllProperties} from '../data/query';
 
 export const autoCompleteSelectFieldColor = '#3c7059';
 
@@ -11,8 +11,8 @@ export async function setupAutoComplete() {
     setupFieldAutoComplete('sortField', 'sortFieldSuggestions', allProperties);
 }
 
-function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords = false) {
-    const input = parent.document.getElementById(inputId) || document.getElementById(inputId);
+function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, multipleKeywords = false) {
+    const input: any = parent.document.getElementById(inputId) || document.getElementById(inputId);
     const suggestions = parent.document.getElementById(suggestionsId) || document.getElementById(suggestionsId);
 
     if (!input || !suggestions) {
@@ -27,14 +27,14 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
     };
 
     Object.entries(handlerMap).forEach(([eventType, handlerProp]) => {
-        if (input[handlerProp]) {
-            input.removeEventListener(eventType, input[handlerProp]);
+        if ((input as any)[handlerProp]) {
+            input.removeEventListener(eventType, (input as any)[handlerProp]);
         }
     });
 
     let currentSuggestionIndex = -1;
 
-    const inputHandler = (e) => {
+    const inputHandler = (e: any) => {
         const value = e.target.value;
         let searchTerm = value;
 
@@ -50,7 +50,7 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
             return;
         }
 
-        const filteredPages = pages.filter(page =>
+        const filteredPages = pages.filter((page: string) =>
             page.toLowerCase().includes(searchTerm.toLowerCase())
         ).slice(0, 10);
 
@@ -59,7 +59,7 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
             return;
         }
 
-        suggestions.innerHTML = filteredPages.map((page, index) => `
+        suggestions.innerHTML = filteredPages.map((page: string, index: number) => `
             <div class="suggestion-item" data-index="${index}" data-page="${page}"
                  style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;
                         ${index === currentSuggestionIndex ? 'background-color: #f0f0f0;' : ''}">
@@ -71,8 +71,8 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
         currentSuggestionIndex = -1;
 
         // 클릭 이벤트 추가
-        suggestions.querySelectorAll('.suggestion-item').forEach(item => {
-            item.addEventListener('click', (e) => {
+        suggestions.querySelectorAll('.suggestion-item').forEach((item:any) => {
+            item.addEventListener('click', (e:any) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const selectedPage = item.dataset.page;
@@ -82,7 +82,7 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
             });
 
             item.addEventListener('mouseenter', () => {
-                suggestions.querySelectorAll('.suggestion-item').forEach(i => {
+                suggestions.querySelectorAll('.suggestion-item').forEach((i: any) => {
                     i.style.backgroundColor = '';
                 });
                 item.style.backgroundColor = autoCompleteSelectFieldColor;
@@ -91,8 +91,8 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
         });
     };
 
-    const keydownHandler = (e) => {
-        const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
+    const keydownHandler = (e: any) => {
+        const suggestionItems: any = suggestions.querySelectorAll('.suggestion-item');
 
         if (suggestions.style.display === 'none' || suggestionItems.length === 0) {
             return;
@@ -137,17 +137,17 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
         }
     };
 
-    input._autoCompleteInputHandler = inputHandler;
-    input._autoCompleteKeydownHandler = keydownHandler;
+    (input as any)._autoCompleteInputHandler = inputHandler;
+    (input as any)._autoCompleteKeydownHandler = keydownHandler;
 
     input.addEventListener('input', inputHandler);
     input.addEventListener('keydown', keydownHandler);
 
-    input.addEventListener('focus', (e) => {
+    input.addEventListener('focus', (e:any) => {
         e.stopPropagation();
     });
 
-    input.addEventListener('blur', (e) => {
+    input.addEventListener('blur', () => {
         setTimeout(() => {
             if (!suggestions.contains(document.activeElement)) {
                 suggestions.style.display = 'none';
@@ -156,7 +156,7 @@ function setupFieldAutoComplete(inputId, suggestionsId, pages, multipleKeywords 
     });
 }
 
-function insertSelectedPage(input, selectedPage, multipleKeywords) {
+function insertSelectedPage(input: any, selectedPage: any, multipleKeywords: any) {
     if (multipleKeywords) {
         const value = input.value;
         const lastCommaIndex = value.lastIndexOf(',');
@@ -174,8 +174,8 @@ function insertSelectedPage(input, selectedPage, multipleKeywords) {
     input.setSelectionRange(input.value.length, input.value.length);
 }
 
-function updateSuggestionHighlight(suggestionItems, currentIndex) {
-    suggestionItems.forEach((item, index) => {
+function updateSuggestionHighlight(suggestionItems: any, currentIndex: any) {
+    suggestionItems.forEach((item: any, index: number) => {
         item.style.backgroundColor = index === currentIndex ? autoCompleteSelectFieldColor : '';
     });
 }

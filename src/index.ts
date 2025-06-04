@@ -1,5 +1,6 @@
-import { showInputDialog } from './ui/dialog.js';
-import { extractFilteredBlocks } from './core/extractor.js';
+import '@logseq/libs'
+import { showInputDialog } from './ui/dialog';
+import { extractFilteredBlocks } from './core/extractor';
 
 const main = () => {
     console.log('Block Extractor Plugin loaded');
@@ -8,7 +9,6 @@ const main = () => {
     logseq.App.registerCommandPalette({
         key: "extract-filtered-blocks",
         label: "Extract Filtered Blocks",
-        desc: "Extract blocks with hierarchical filtering",
     }, async () => {
         await showInputDialog();
     });
@@ -19,7 +19,7 @@ const main = () => {
     });
 
     // 블록 컨텍스트 메뉴에 추가
-    logseq.Editor.registerBlockContextMenuItem('Extract Filtered Blocks', async (e) => {
+    logseq.Editor.registerBlockContextMenuItem('Extract Filtered Blocks', async () => {
         await showInputDialog();
     });
 
@@ -45,10 +45,10 @@ const main = () => {
         },
 
         executeExtraction: async () => {
-            const primaryTagInput = parent.document.querySelector('#primaryTag');
-            const filterKeywordsInput = parent.document.querySelector('#filterKeywords');
-            const sortFieldInput = parent.document.querySelector('#sortField');
-            const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked');
+            const primaryTagInput = parent.document.querySelector('#primaryTag') as HTMLInputElement | null;
+            const filterKeywordsInput = parent.document.querySelector('#filterKeywords') as HTMLInputElement | null;
+            const sortFieldInput = parent.document.querySelector('#sortField') as HTMLInputElement | null;
+            const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked') as HTMLInputElement | null;
 
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
@@ -60,7 +60,7 @@ const main = () => {
                 return;
             }
 
-            let keywords = [];
+            let keywords: string[] = [];
             if (filterKeywords && filterKeywords.length > 0) {
                 keywords = filterKeywords.split(',')
                     .map(k => k.trim())

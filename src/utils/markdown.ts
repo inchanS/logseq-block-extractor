@@ -1,4 +1,4 @@
-export function renderBlockWithChildren(block, indent = 0, maxDepth = 10) {
+export function renderBlockWithChildren(block: { content: string; children: any[]; }, indent = 0, maxDepth = 10) {
     if (!block || !block.content || indent > maxDepth) return '';
 
     let content = '';
@@ -15,9 +15,8 @@ export function renderBlockWithChildren(block, indent = 0, maxDepth = 10) {
     return content;
 }
 
-export function generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults) {
+export function generateMarkdown(primaryTag:string, filterKeywords:string[], validSortField:string, sortOrder:string, filteredResults: string[]) {
     const hasFilter = filterKeywords && filterKeywords.length > 0;
-    const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
     const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
 
@@ -34,7 +33,7 @@ export function generateMarkdown(primaryTag, filterKeywords, validSortField, sor
     markdown += `3. 정렬 기준: ${fieldText} (${sortText})\n\n`;
     markdown += `총 ${filteredResults.length}개 블록 발견\n\n`;
 
-    filteredResults.forEach((item, index) => {
+    filteredResults.forEach((item: any, index: number) => {
         markdown += `### ${index + 1}. ${item.page.name}\n\n`;
         markdown += renderBlockWithChildren(item.block);
         markdown += "\n---\n\n";
@@ -43,7 +42,7 @@ export function generateMarkdown(primaryTag, filterKeywords, validSortField, sor
     return markdown;
 }
 
-export function downloadMarkdown(content, filename) {
+export function downloadMarkdown(content: any, filename: string) {
     try {
         const blob = new Blob([content], {type: 'text/markdown;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
@@ -63,7 +62,7 @@ export function downloadMarkdown(content, filename) {
     }
 }
 
-export function generateFilename(primaryTag, filterKeywords, validSortField) {
+export function generateFilename(primaryTag: string, filterKeywords: string[], validSortField: string) {
     const hasFilter = filterKeywords && filterKeywords.length > 0;
     const filterSuffix = hasFilter ? `_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}` : '_all_blocks';
     const sortSuffix = validSortField !== 'filename' ? `_sortBy_${validSortField}` : '';

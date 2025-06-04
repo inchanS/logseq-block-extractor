@@ -6,7 +6,7 @@ export default defineConfig({
         minify: false, // Disable minification for debugging
         outDir: 'dist',
         rollupOptions: {
-            input: 'src/index.js',
+            input: 'src/index.ts',
             output: {
                 entryFileNames: 'index.js',
                 format: 'es'

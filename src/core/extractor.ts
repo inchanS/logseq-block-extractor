@@ -1,9 +1,10 @@
-import { getBlocksReferencingTag } from '../data/query.js';
-import { filterBlocksByKeyword } from './filter.js';
-import { validateAndSetDefaultSortField, sortResults, getSortValue } from './sort.js';
-import { generateMarkdown, downloadMarkdown, generateFilename } from '../utils/markdown.js';
+import {getBlocksReferencingTag} from '../data/query';
+import {filterBlocksByKeyword} from './filter';
+import {sortResults, getSortValue} from './sort';
+import {generateMarkdown, downloadMarkdown, generateFilename} from '../utils/markdown';
+import {validateAndSetDefaultSortField} from "../utils/validation";
 
-export async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrder = 'asc', sortField = 'filename') {
+export async function extractFilteredBlocks(primaryTag: string, filterKeywords: string[], sortOrder = 'asc', sortField = 'filename') {
     try {
         const validSortField = await validateAndSetDefaultSortField(sortField);
 
@@ -24,7 +25,7 @@ export async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrde
         console.log(`Found ${results.length} blocks referencing ${primaryTag}`);
         logseq.UI.showMsg(`Processing ${results.length} blocks...`, 'info');
 
-        let filteredResults = [];
+        let filteredResults: any[] = [];
         let processedCount = 0;
 
         for (const result of results) {
@@ -50,7 +51,7 @@ export async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrde
                     }
 
                     if (processedBlock) {
-                        const { sortValue, secondarySortValue } = getSortValue(block, validSortField);
+                        const {sortValue, secondarySortValue} = getSortValue(block, validSortField);
 
                         filteredResults.push({
                             block: processedBlock,
@@ -87,8 +88,12 @@ export async function extractFilteredBlocks(primaryTag, filterKeywords, sortOrde
 
         logseq.UI.showMsg(`Successfully extracted ${filteredResults.length} blocks!`, 'success');
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error extracting blocks:', error);
-        logseq.UI.showMsg(`Error: ${error.message}`, 'error');
+        if (error instanceof Error) {
+            logseq.UI.showMsg(`Error: ${error.message}`, 'error');
+        } else {
+            logseq.UI.showMsg(`Error: ${String(error)}`, 'error');
+        }
     }
 }

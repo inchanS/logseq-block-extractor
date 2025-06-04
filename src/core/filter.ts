@@ -1,4 +1,4 @@
-export function blockContainsKeywords(block, keywords) {
+export function blockContainsKeywords(block: any, keywords: string[]) {
     if (!block || !block.content) return false;
 
     const content = block.content.toLowerCase();
@@ -7,7 +7,7 @@ export function blockContainsKeywords(block, keywords) {
     );
 }
 
-export function filterBlocksByKeyword(block, keywords) {
+export function filterBlocksByKeyword(block: any, keywords: string[]) {
     if (!block) return null;
 
     const contentIncludesKeyword = blockContainsKeywords(block, keywords);
@@ -21,8 +21,8 @@ export function filterBlocksByKeyword(block, keywords) {
         let filteredChildren = [];
         if (block.children && Array.isArray(block.children)) {
             filteredChildren = block.children
-                .map(child => filterBlocksByKeyword(child, keywords))
-                .filter(child => child !== null);
+                .map((child:string) => filterBlocksByKeyword(child, keywords))
+                .filter((child: string) => child !== null);
         }
 
         if (filteredChildren.length > 0) {
