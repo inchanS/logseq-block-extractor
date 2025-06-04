@@ -104,9 +104,9 @@ export async function showInputDialog() {
                                               background: var(--ls-tertiary-background-color, #f5f5f5); border: 1px solid var(--ls-border-color, #ddd); 
                                               border-radius: 6px; cursor: pointer; color: var(--ls-primary-text-color, #333);
                                               font-weight: normal; transition: all 0.2s ease;">Cancel</button>
-                  <button data-on-click="executeExtraction" style="padding: 10px 18px; background: var(--ls-primary-background-color, #4CAF50); 
+                  <button data-on-click="executeExtraction" style="padding: 10px 18px; background: var(--ls-secondary-background-color, #4CAF50); 
                                                color: white; border: none; border-radius: 6px; 
-                                               cursor: pointer; font-weight: bold; transition: all 0.2s ease;">Extract Blocks</button>
+                                               cursor: pointer; color: var(--ls-active-primary-color, #333); font-weight: bold; transition: all 0.2s ease;">Extract Blocks</button>
                 </div>
               </div>
               <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
