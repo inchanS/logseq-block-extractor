@@ -55,7 +55,7 @@ export async function showInputDialog() {
                 
                 <div style="margin-bottom: 20px;">
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Sort Order:</label>
-                  <div style="display: flex; gap: 20px;">
+                  <div style="display: flex; flex-direction: column; gap: 10px;">
                     <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #333;">
                       <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
                              style="margin-right: 6px; cursor: pointer;">
