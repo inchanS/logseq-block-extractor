@@ -22,7 +22,7 @@ export async function showInputDialog() {
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Primary Tag:</label>
                   <input type="text" id="primaryTag" placeholder="e.g., TagName" 
                          style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-primary-text-color, #333); background: var(--ls-secondary-background-color, white);">
+                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
                   <div id="primaryTagSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
                                                          background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
                                                          border-top: none; border-radius: 0 0 6px 6px; 
@@ -35,7 +35,7 @@ export async function showInputDialog() {
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Keywords (comma separated, optional):</label>
                   <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2, -exclude (leave empty for all blocks)" 
                          style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-primary-text-color, #333); background: var(--ls-secondary-background-color, white);">
+                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
                   <div id="filterKeywordsSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
                                                              background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
                                                              border-top: none; border-radius: 0 0 6px 6px; 
@@ -117,7 +117,7 @@ export async function showInputDialog() {
                   <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Field (optional):</label>
                   <input type="text" id="sortField" placeholder="e.g., date, created-at (leave empty for filename)" 
                          style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-primary-text-color, #333); background: var(--ls-secondary-background-color, white);">
+                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
                   <div id="sortFieldSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
                                                        background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
                                                        border-top: none; border-radius: 0 0 6px 6px; 
