@@ -50,8 +50,17 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
             return;
         }
 
+        // 검색어에서 하이픈(-) 제거하여 검색
+        const cleanSearchTerm = searchTerm.startsWith('-') ? searchTerm.substring(1) : searchTerm;
+
+        // 최소 2글자 이상 검색어가 있는지 확인 (하이픈 제거 후)
+        if (cleanSearchTerm.length < 2) {
+            suggestions.style.display = 'none';
+            return;
+        }
+
         const filteredPages = pages.filter((page: string) =>
-            page.toLowerCase().includes(searchTerm.toLowerCase())
+            page.toLowerCase().includes(cleanSearchTerm.toLowerCase())
         ).slice(0, 10);
 
         if (filteredPages.length === 0) {
@@ -60,7 +69,7 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
         }
 
         suggestions.innerHTML = filteredPages.map((page: string, index: number) => `
-            <div class="suggestion-item" data-index="${index}" data-page="${page}"
+            <div class="suggestion-item" data-index="${index}" data-page="${searchTerm.startsWith('-') ? '-' + page : page}"
                  style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;
                         ${index === currentSuggestionIndex ? 'background-color: #f0f0f0;' : ''}">
                 ${page}
