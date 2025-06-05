@@ -62,7 +62,7 @@ export async function showInputDialog() {
                     .filter-option:has(input:checked), 
                     .sort-option:has(input:checked) {
                       background-color: var(--ls-secondary-background-color, #e8f4fd);
-                      border-color: var(--ls-link-text-color, #0066cc);
+                      /*border-color: var(--ls-link-text-color, #0066cc);*/
                       box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
                     }
                     
