@@ -15,7 +15,7 @@ export async function getAllPages() {
             .filter(name => name && typeof name === 'string' && name.trim());
     } catch (error) {
         console.error('Error fetching pages:', error);
-        logseq.UI.showMsg('페이지 목록을 가져오는 중 오류가 발생했습니다.', 'warning');
+        logseq.UI.showMsg('An error occurred while fetching the page list.', 'warning');
         return [];
     }
 }
@@ -135,7 +135,7 @@ export async function getAllProperties() {
 
     } catch (error) {
         console.error('Critical error in getAllProperties:', error);
-        logseq.UI.showMsg('프로퍼티 목록을 가져오는 중 오류가 발생했습니다.', 'error');
+        logseq.UI.showMsg('An error occurred while fetching the property list.', 'error');
         return ['filename', 'date', 'created-at', 'updated-at', 'tags'];
     }
 }

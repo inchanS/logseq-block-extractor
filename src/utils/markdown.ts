@@ -20,18 +20,18 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
     const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
 
-    let markdown = `# ${primaryTag} 참조 블록 추출\n\n`;
-    markdown += `검색 조건:\n`;
-    markdown += `1. "${primaryTag}" 태그를 참조하는 블록\n`;
+    let markdown = `# Extracting reference blocks ${primaryTag}\n\n`;
+    markdown += `Search conditions:\n`;
+    markdown += `1. "Blocks that reference tags ${primaryTag}"\n`;
 
     if (hasFilter) {
-        markdown += `2. 계층 구조를 유지하되 "${filterKeywords.join(', ')}" 관련 블록과 그 하위 블록 모두 표시\n`;
+        markdown += `2. Keep the hierarchy, but show all "${filterKeywords.join(', ')}" related blocks and their children\n`;
     } else {
-        markdown += `2. 모든 블록과 그 하위 블록 표시 (필터 없음)\n`;
+        markdown += `2. Show all blocks and their child blocks (no filter)\n`;
     }
 
-    markdown += `3. 정렬 기준: ${fieldText} (${sortText})\n\n`;
-    markdown += `총 ${filteredResults.length}개 블록 발견\n\n`;
+    markdown += `3. Sort by: ${fieldText} (${sortText})\n\n`;
+    markdown += `A total of ${filteredResults.length} blocks found\n\n`;
 
     filteredResults.forEach((item: any, index: number) => {
         markdown += `### ${index + 1}. ${item.page.name}\n\n`;
