@@ -1,0 +1,43 @@
+name: Build and Release plugin
+
+on:
+  push:
+    tags:
+      - "*"  # 모든 태그 푸시 시 실행
+
+env:
+  PLUGIN_NAME: logseq-block-extractor
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: |
+          npm install -g yarn
+          yarn
+
+      - name: Build
+        run: |
+          yarn build
+          mkdir ${{ env.PLUGIN_NAME }}
+          cp README.md package.json icon.png CHANGELOG.md ${{ env.PLUGIN_NAME }} || true
+          mv dist ${{ env.PLUGIN_NAME }}
+          zip -r ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip ${{ env.PLUGIN_NAME }}
+
+      - name: Automatic Release with Changelog
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          files: ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
+          prerelease: false

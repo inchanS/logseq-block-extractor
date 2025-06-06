@@ -1,7 +1,7 @@
 {
   "name": "logseq-block-extractor",
   "version": "1.0.0",
-  "description": "Extract and filter blocks with hierarchical structure",
+  "description": " Filter the reference block for a specific page in Logseq and download it as a markdown file.",
   "type": "module",
   "main": "dist/index.js",
   "logseq": {
@@ -14,9 +14,10 @@
     "clean": "rm -rf dist && rm -f logseq-block-extractor.zip",
     "dev": "npm run clean && vite",
     "build": "npm run clean && tsc && vite build",
-    "dist": "npm run build && cd dist && zip -r ../logseq-block-extractor.zip .",
+    "pack": "npm run build && zip -qq -r logseq-block-extractor-$(node -p \"require('./package.json').version\").zip dist readme.md LICENSE package.json *.png",
     "preview": "vite preview",
-    "watch": "npm run clean && vite build --watch"
+    "watch": "npm run clean && vite build --watch",
+    "dist": "sh version.sh"
   },
   "repository": {
     "type": "git",
@@ -31,12 +32,14 @@
     "export"
   ],
   "author": "Inchan Song",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
-    "@logseq/libs": "^0.2.1"
+    "@logseq/libs": "^0.2.1",
+    "conventional-changelog": "^7.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
+    "conventional-changelog-angular": "^8.0.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   }
