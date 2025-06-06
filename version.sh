@@ -14,6 +14,8 @@ jq --arg v "$CLEAN_VERSION" '.version=$v' package.json > package.tmp.json && mv 
 
 # CHANGELOG.md 파일 업데이트
 conventional-changelog -p angular -i CHANGELOG.md -s
+# CHANGELOG-DEV.md 파일 업데이트
+conventional-changelog -i CHANGELOG-DEV.md -s
 
 # Git 작업
 git add package.json CHANGELOG.md
