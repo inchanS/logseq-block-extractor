@@ -4,6 +4,8 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor)  ![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total) ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor)
 
+![logo](icon.png)  
+
 ## Overview
 
 The **Block Extractor Plugin** enables you to extract the content of "Linked References" at the bottom of a Logseq page and export it as a Markdown file. It extracts all blocks referencing a specific tag (or page), maintaining their hierarchical structure. When you enter a primary tag or page, and optionally filter keywords, the plugin queries the Logseq database to collect all blocks (including their children) referencing the tag or page. If keywords are entered, only the blocks (and their descendants) containing those keywords are filtered in. This process closely mirrors the filtering options in Logseq's "Linked References" section. The final output is generated as a Markdown file, ready for download. With this plugin, you can quickly gather, organize, and share exactly what you need from your Logseq graph.

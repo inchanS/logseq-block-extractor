@@ -5,6 +5,8 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor)  ![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total) ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor)
 
 
+![logo](icon.png)  
+
 ## 개요
 
 **Block Extractor Plugin**는 Logseq에서 페이지 하단의 "Linked References"의 내용을 추출하여 Markdown파일로 내보낼 수 있도록 도와주는 플러그인입니다. 특정 태그(또는 페이지)를 참조하는 모든 블록을 계층 구조를 유지하며 추출합니다. 기본 태그 또는 페이지(primary tag)와 선택적으로 필터 키워드를 입력하면, Logseq 데이터베이스 쿼리를 통해 해당 태그(또는 페이지)를 참조하는 블록(하위 블록 포함)을 모두 가져오고, 키워드가 있으면 해당 키워드를 포함하는 블록만 필터링합니다. 이는 마치 Logseq 페이지 하단의 "Linked References"에서 설정하는 필터 기능과 거의 유사합니다. 최종 결과는 Markdown 형식으로 생성되어 다운로드할 수 있습니다. 이 플러그인을 통해 Logseq 그래프에서 원하는 내용을 빠르고 쉽게 수집, 정리, 공유할 수 있습니다.
