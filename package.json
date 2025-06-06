@@ -1,9 +1,9 @@
 {
   "name": "logseq-block-extractor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": " Filter the reference block for a specific page in Logseq and download it as a markdown file.",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.html",
   "logseq": {
     "id": "logseq-block-extractor",
     "title": "Block Extractor",
