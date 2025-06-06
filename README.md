@@ -58,7 +58,7 @@ The **Block Extractor Plugin** enables you to extract the content of "Linked Ref
 ## How to Install
 
 1. **Official Plugin Marketplace (recommended)**
-    - Search for **Block Extractor Plugin** in the Logseq Plugin Marketplace, install.
+    - Search for **logseq-block-extractor** in the Logseq Plugin Marketplace, install.
 
 2. **Manual Installation**
     - Download the latest `logseq-block-extractor.zip` from the [GitHub Releases page](https://github.com/inchanS/logseq-block-extractor/releases/latest) and unzip it.
