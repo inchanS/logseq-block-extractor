@@ -34,7 +34,7 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
     markdown += `A total of ${filteredResults.length} blocks found\n\n`;
 
     filteredResults.forEach((item: any, index: number) => {
-        markdown += `### ${index + 1}. ${item.page.name}\n\n`;
+        markdown += `## ${index + 1}. ${item.page.name}\n\n`;
         markdown += renderBlockWithChildren(item.block);
         markdown += "\n---\n\n";
     });
