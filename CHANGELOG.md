@@ -1,3 +1,7 @@
+## [1.0.1](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.0...v1.0.1) (2025-06-06)
+
+
+
 # [1.0.0](https://github.com/inchanS/logseq-block-extractor/compare/v0.5.1...v1.0.0) (2025-06-06)
 
 
