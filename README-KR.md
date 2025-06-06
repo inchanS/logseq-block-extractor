@@ -61,7 +61,10 @@
 
 ## 설치 방법
 
-1. **Logseq 플러그인 수동 설치**
+1. **Logseq 플러그인 마켓 플레이스에서 설치 (추천)**
+    - Logseq Plugin - Marcketplace 에서 **logseq-block-extractor** 검색 후, 설치
+
+2. **Logseq 플러그인 수동 설치**
     - [github 최신 Release 페이지](https://github.com/inchanS/logseq-block-extractor/releases/latest)에서 최신버전의 `logseq-block-extractor.zip`파일을 다운로드 한 후, 압축을 해제합니다.
     - Logseq - Settings - Advanced - **Developer mode를 활성화**합니다.
         - ![](asset/logseq-settings.png)
@@ -69,10 +72,6 @@
         - ![](asset/logseq-plugins.png)
     - 화살표로 표시한 버튼을 누른 후, 아까 다운로드한 **폴더를 클릭**하여 설치합니다.
     - Logseq를 재시작하거나 새로고침하여 플러그인을 로드합니다.
-2. **Logseq에 공식 플러그인 마켓 플레이스 이용 (등록 준비중)**
-    - Logseq Plugin - Marcketplace 에서 **Block Extractor Plugin**을 검색 후, 설치
-    - Logseq를 재시작하거나 새로고침하여 플러그인을 로드합니다.
-
 
 ---
 
