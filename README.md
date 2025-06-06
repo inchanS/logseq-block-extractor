@@ -15,7 +15,7 @@ The **Block Extractor Plugin** enables you to extract the content of "Linked Ref
 
 ---
 
- <img src="asset/logseq-block-extractor.png" alt="Logseq block-extractor UI" width="70%">
+ ![Logseq block-extractor UI](asset/logseq-block-extractor.png)  
 
 ## Main Features
 

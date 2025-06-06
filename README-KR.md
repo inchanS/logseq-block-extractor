@@ -16,7 +16,7 @@
 
 ---
 
- <img src="asset/logseq-block-extractor.png" alt="Logseq block-extractor UI" width="70%">  
+![Logseq block-extractor UI](asset/logseq-block-extractor.png)  
 
 ## 주요 기능
 
