@@ -2,7 +2,9 @@
 
 # Block Extractor Plugin for Logseq
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor)  ![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total) ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor)
+![GitHub stars](https://img.shields.io/github/stars/inchans/logseq-block-extractor?style=flat&logo=apachespark)
+![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total?logo=github) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor?logo=rocket)  ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor?logo=gnu)
+
 
 
 ![logo](icon.png)  
