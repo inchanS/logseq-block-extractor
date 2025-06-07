@@ -9,7 +9,7 @@
 
 ## Overview
 
-The **Block Extractor Plugin** enables you to extract the content of "Linked References" at the bottom of a Logseq page and export it as a Markdown file. It extracts all blocks referencing a specific tag (or page), maintaining their hierarchical structure. When you enter a primary tag or page, and optionally filter keywords, the plugin queries the Logseq database to collect all blocks (including their children) referencing the tag or page. If keywords are entered, only the blocks (and their descendants) containing those keywords are filtered in. This process closely mirrors the filtering options in Logseq's "Linked References" section. The final output is generated as a Markdown file, ready for download. With this plugin, you can quickly gather, organize, and share exactly what you need from your Logseq graph.
+The **Block Extractor Plugin** enables you to **extract the content of "Linked References" at the bottom of a Logseq page and export it as a Markdown file**. It extracts all blocks referencing a specific tag (or page), maintaining their hierarchical structure. When you enter a primary tag or page, and optionally filter keywords, the plugin queries the Logseq database to collect all blocks (including their children) referencing the tag or page. If keywords are entered, only the blocks (and their descendants) containing those keywords are filtered in. This process closely mirrors the filtering options in Logseq's "Linked References" section. The final output is generated as a Markdown file, ready for download. With this plugin, you can quickly gather, organize, and share exactly what you need from your Logseq graph.
 
 > **Personal Note:**
 > The main reason I use Logseq is this powerful "Linked References" feature. However, one limitation is that you can't easily extract its contents entirely. With this plugin, instead of copying blocks manually, you can rapidly collect relevant notes or project snippets. The keyword-based hierarchical filtering makes it easy to extract only the needed information while filtering out the unnecessary. This enables you to effortlessly extract your valuable, backlink-driven knowledge and, if needed, share it or request AI analysis at a lower token cost.
@@ -24,7 +24,7 @@ The **Block Extractor Plugin** enables you to extract the content of "Linked Ref
     - Automatically searches for blocks referencing a specified primary tag or page.
     - Extracts blocks while maintaining the full hierarchical structure, including all child blocks.
 2. **Optional Keyword Filtering**
-    - Enter a comma-separated list of keywords (supports Korean, English, etc.).
+    - Enter a comma-separated list of keywords.
     - Any block (or descendent) including at least one keyword is included in the results.
     - When entering two or more keywords (comma-separated), you can set the filtering logic to AND or OR between keywords.
     - If you precede a keyword with a `-` (hyphen), that keyword acts as an exclusion filter.
@@ -36,7 +36,7 @@ The **Block Extractor Plugin** enables you to extract the content of "Linked Ref
 ## Features
 
 - **Autocomplete Support**
-    - When you enter at least two characters, matching page titles appear in an autocomplete list.
+    - When you enter at least two characters, matching page titles appear in an autocomplete list (supports English, Korean, etc.).
     - This is identical to the list that appears when you type `[[` in Logseq's editor.
     - Autocomplete is available for both the Primary Tag and Filter Keywords fields.
     - For the Sort Field, only properties are suggested.
