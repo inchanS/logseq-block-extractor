@@ -1,3 +1,9 @@
+## <small>1.0.4 (2025-06-07)</small>
+
+* feat: improve UI layout for filter and sort options ([1759b3a](https://github.com/inchanS/logseq-block-extractor/commit/1759b3a))
+
+
+
 ## <small>1.0.3 (2025-06-07)</small>
 
 * fix: improve markdown spacing in reference block outlines ([ff61909](https://github.com/inchanS/logseq-block-extractor/commit/ff61909))

@@ -1,3 +1,12 @@
+## [1.0.4](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.3...v1.0.4) (2025-06-07)
+
+
+### Features
+
+* improve UI layout for filter and sort options ([1759b3a](https://github.com/inchanS/logseq-block-extractor/commit/1759b3ad9817b4a0a0ca8600cb95427dac43d7d9))
+
+
+
 ## [1.0.3](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.2...v1.0.3) (2025-06-07)
 
 
