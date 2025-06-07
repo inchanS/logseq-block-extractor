@@ -18,7 +18,7 @@ conventional-changelog -p angular -i CHANGELOG.md -s
 conventional-changelog -i CHANGELOG-DEV.md -s
 
 # Git 작업
-git add package.json CHANGELOG.md
+git add package.json CHANGELOG.md CHANGELOG-DEV.md
 git commit -m "chore: bump version to $CLEAN_VERSION and update changelog"
 git push origin main
 git tag "v$CLEAN_VERSION"

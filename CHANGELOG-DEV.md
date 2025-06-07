@@ -1,3 +1,17 @@
+## <small>1.0.2 (2025-06-07)</small>
+
+* style: enhance markdown formatting in reference blocks ([6416d69](https://github.com/inchanS/logseq-block-extractor/commit/6416d69))
+* docs: Add an icon to the README.md file ([a26fb7e](https://github.com/inchanS/logseq-block-extractor/commit/a26fb7e))
+* docs: change badges in README.md ([ec0e048](https://github.com/inchanS/logseq-block-extractor/commit/ec0e048))
+* docs: change UI img file ([455abc5](https://github.com/inchanS/logseq-block-extractor/commit/455abc5))
+* docs: edit README.md ([ecff60f](https://github.com/inchanS/logseq-block-extractor/commit/ecff60f))
+* docs: fix LICENSE.txt ([221a887](https://github.com/inchanS/logseq-block-extractor/commit/221a887))
+* docs: update installation instructions in README files ([efbe315](https://github.com/inchanS/logseq-block-extractor/commit/efbe315))
+* docs: update installation instructions in README files ([a59b6f1](https://github.com/inchanS/logseq-block-extractor/commit/a59b6f1))
+* chore: update version script to support CHANGELOG-DEV.md ([d73814c](https://github.com/inchanS/logseq-block-extractor/commit/d73814c))
+
+
+
 ## <small>1.0.1 (2025-06-06)</small>
 
 * chore: bump version to 1.0.0 and update changelog ([5442484](https://github.com/inchanS/logseq-block-extractor/commit/5442484))
