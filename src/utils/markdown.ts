@@ -20,18 +20,18 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
     const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
 
-    let markdown = `# Extracting reference blocks ${primaryTag}\n\n`;
+    let markdown = `# Extracting reference blocks **${primaryTag}**\n\n`;
     markdown += `Search conditions:\n`;
-    markdown += `1. "Blocks that reference tags ${primaryTag}"\n`;
+    markdown += `1. "Blocks that reference tags **${primaryTag}**"\n`;
 
     if (hasFilter) {
-        markdown += `2. Keep the hierarchy, but show all "${filterKeywords.join(', ')}" related blocks and their children\n`;
+        markdown += `2. Keep the hierarchy, but show all **"${filterKeywords.join(', ')}"** related blocks and their children\n`;
     } else {
         markdown += `2. Show all blocks and their child blocks (no filter)\n`;
     }
 
-    markdown += `3. Sort by: ${fieldText} (${sortText})\n\n`;
-    markdown += `A total of ${filteredResults.length} blocks found\n\n`;
+    markdown += `3. Sort by: **${fieldText}** (${sortText})\n\n`;
+    markdown += `A total of **${filteredResults.length} blocks** found\n\n`;
 
     filteredResults.forEach((item: any, index: number) => {
         markdown += `## ${index + 1}. ${item.page.name}\n\n`;
