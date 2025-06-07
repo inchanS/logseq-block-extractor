@@ -1,3 +1,12 @@
+## [1.0.3](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.2...v1.0.3) (2025-06-07)
+
+
+### Bug Fixes
+
+* improve markdown spacing in reference block outlines ([ff61909](https://github.com/inchanS/logseq-block-extractor/commit/ff61909be61c06567382f4c0dd0dee68d4d3a1a4))
+
+
+
 ## [1.0.2](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.1...v1.0.2) (2025-06-07)
 
 

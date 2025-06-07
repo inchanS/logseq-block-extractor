@@ -1,3 +1,10 @@
+## <small>1.0.3 (2025-06-07)</small>
+
+* fix: improve markdown spacing in reference block outlines ([ff61909](https://github.com/inchanS/logseq-block-extractor/commit/ff61909))
+* chore: update version script and add CHANGELOG-DEV.md ([a608e2b](https://github.com/inchanS/logseq-block-extractor/commit/a608e2b))
+
+
+
 ## <small>1.0.2 (2025-06-07)</small>
 
 * style: enhance markdown formatting in reference blocks ([6416d69](https://github.com/inchanS/logseq-block-extractor/commit/6416d69))
