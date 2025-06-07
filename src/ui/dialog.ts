@@ -166,8 +166,12 @@ export async function showInputDialog() {
                           background: rgba(0,0,0,0.5); z-index: 999;"></div>
             `,
             style: {
-                width: '100vw',
-                height: '100vh'
+                width: 'auto',                    // 필요 최소 크기로 설정
+                height: 'auto',
+                backgroundColor: 'transparent',   // 래퍼 배경을 투명으로 설정
+                border: 'none',                   // 혹시 기본 테두리가 있으면 제거
+                padding: '0',                     // 여분 패딩이 남아있다면 0으로
+                margin: '0'                       // 여분 margin도 0으로
             }
         });
 
