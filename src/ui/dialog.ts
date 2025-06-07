@@ -47,9 +47,15 @@ export async function showInputDialog() {
                 <div style="margin-bottom: 18px;">
                   <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Mode: (For multiple keywords)</label>
                   
-                  
-                <!--   라디오 버튼 스타일      -->
+                  <!--   라디오 버튼 스타일      -->
                   <style>
+                    .filter-mode-container,
+                    .sort-order-container {
+                      display: flex;
+                      gap: 16px;
+                      flex-wrap: wrap;
+                    }
+                    
                     .filter-option,
                     .sort-option {
                       transition: all 0.2s ease;
@@ -57,9 +63,11 @@ export async function showInputDialog() {
                       border-radius: 8px;
                       border: 2px solid transparent;
                       margin-bottom: 8px;
+                      flex: 1;
+                      min-width: 150px;
                     }
                     
-                    .filter-option:has(input:checked), 
+                    .filter-option:has(input:checked),
                     .sort-option:has(input:checked) {
                       background-color: var(--ls-secondary-background-color, #e8f4fd);
                       /*border-color: var(--ls-link-text-color, #0066cc);*/
@@ -91,25 +99,21 @@ export async function showInputDialog() {
                     }
                   </style>
                   
-                  <div class="filter-option" style="display: flex; align-items: center; cursor: pointer;">
-                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                      <input type="radio" id="filterModeOr" name="filterMode" value="or" checked 
-                             style="margin-right: 12px; cursor: pointer;">
-                      <span class="option-text">Any (OR)</span>
-                      <span style="display: inline-block; margin-left: 8px; color: var(--ls-secondary-text-color, #666); font-size: 12px;">
-                        - Include any of the following
-                      </span>
-                    </label>
-                  </div>
-                  <div class="filter-option" style="display: flex; align-items: center; cursor: pointer;">
-                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                      <input type="radio" id="filterModeAnd" name="filterMode" value="and" 
-                             style="margin-right: 12px; cursor: pointer;">
-                      <span class="option-text">All (AND)</span>
-                      <span style="display: inline-block; margin-left: 8px; color: var(--ls-secondary-text-color, #666); font-size: 12px;">
-                        - Include all keywords
-                      </span>
-                    </label>
+                  <div class="filter-mode-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                        <input type="radio" id="filterModeOr" name="filterMode" value="or" checked 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <span class="option-text">Any</span>
+                      </label>
+                    </div>
+                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                        <input type="radio" id="filterModeAnd" name="filterMode" value="and" 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <span class="option-text">All</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
                 
@@ -123,25 +127,28 @@ export async function showInputDialog() {
                                                        border-top: none; border-radius: 0 0 6px 6px; 
                                                        max-height: 200px; overflow-y: auto; 
                                                        display: none; z-index: 1001;"></div>
-                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">Default: filename. For other fields, enter property name like 'date', 'created-at', etc.</small>
+                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">Enter one property name only (e.g., 'date', 'created-at'). Default: filename if empty.</small>
                 </div>
                 
                 <div style="margin-bottom: 24px;">
                   <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Order:</label>
-                   <div class="sort-option" style="display: flex; align-items: center; cursor: pointer;">
-                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                      <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
-                             style="margin-right: 12px; cursor: pointer;">
-                      <span class="sort-text">Ascending (A → Z)</span>
-                    </label>
-                  </div>
                   
-                  <div class="sort-option" style="display: flex; align-items: center; cursor: pointer;">
-                    <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                      <input type="radio" id="sortDesc" name="sortOrder" value="desc" 
-                             style="margin-right: 12px; cursor: pointer;">
-                      <span class="sort-text">Descending (Z → A)</span>
-                    </label>
+                  <div class="sort-order-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                        <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <span class="sort-text">Ascending (A → Z)</span>
+                      </label>
+                    </div>
+                    
+                    <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                        <input type="radio" id="sortDesc" name="sortOrder" value="desc" 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <span class="sort-text">Descending (Z → A)</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
                 
