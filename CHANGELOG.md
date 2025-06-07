@@ -1,3 +1,12 @@
+## [1.0.5](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.4...v1.0.5) (2025-06-07)
+
+
+### Bug Fixes
+
+* Remove unnecessary parent layer traces that used to appear behind plugins ([380a243](https://github.com/inchanS/logseq-block-extractor/commit/380a2439ecff5bfe6578a80b80f73f9ff0a00dda))
+
+
+
 ## [1.0.4](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.3...v1.0.4) (2025-06-07)
 
 

@@ -1,3 +1,9 @@
+## <small>1.0.5 (2025-06-07)</small>
+
+* fix: Remove unnecessary parent layer traces that used to appear behind plugins ([380a243](https://github.com/inchanS/logseq-block-extractor/commit/380a243))
+
+
+
 ## <small>1.0.4 (2025-06-07)</small>
 
 * feat: improve UI layout for filter and sort options ([1759b3a](https://github.com/inchanS/logseq-block-extractor/commit/1759b3a))
