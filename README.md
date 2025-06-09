@@ -104,6 +104,9 @@ The **Block Extractor Plugin** enables you to **extract the content of "Linked R
         - Both alphabetic and numeric sorting are supported.
     - Link Replacement: You can replace the link characters `[[`, `]]` in Logseq in the extracted block.
         - You can enter `**` for Opening Symbol and Closing Symbol, respectively, or `==` to replace them with bold, highlight, etc.
+    - Hierarchy option: You can choose whether to include the parent hierarchy.
+        - Check the **Exclude Parents** checkbox to include only the block you are looking for and its children.
+        - If unchecked, it will export all immediate parent blocks together. This is almost like Logseq's **“Linked References”**.
 3. **Run Extraction**
     - Click the **Extract Blocks** button.
     - The plugin will:

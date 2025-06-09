@@ -110,7 +110,10 @@
         - **Descending** : 내림차순으로 선택합니다. (Z → A 및 9 → 1 순서입니다.)
         - Sort Order 기능은 문자와 숫자 모두 지원합니다.
     - **Link Replacement**: 추출한 블럭에서 Logseq의 링크 문자인 `[[`, `]]`를 바꿀 수 있습니다.
-        - Opening Symbol, Closing Symbol에서 각각 `**`를 입력하거나, `==`를 입력하여 볼드체, 하이라이트 등으로 바꿀 수 있습니다.  
+        - Opening Symbol, Closing Symbol에서 각각 `**`를 입력하거나, `==`를 입력하여 볼드체, 하이라이트 등으로 바꿀 수 있습니다.
+    - **Hierarchy option**: 상위계층 포함 여부를 선택할 수 있습니다.
+        - **Exclude Parents** 체크박스에 체크하면 찾고자 하는 블럭과 그 하위블럭만을 포함합니다.
+        - 체크하지 않으면, 직계 상위 블럭을 함께 내보냅니다. 이는 마치 Logseq의 **"Linked References"**과 거의 유사합니다.
 
 3. **추출 실행**
 
