@@ -102,6 +102,8 @@ The **Block Extractor Plugin** enables you to **extract the content of "Linked R
         - **Ascending:** A → Z or 1 → 9.
         - **Descending:** Z → A or 9 → 1.
         - Both alphabetic and numeric sorting are supported.
+    - Link Replacement: You can replace the link characters `[[`, `]]` in Logseq in the extracted block.
+        - You can enter `**` for Opening Symbol and Closing Symbol, respectively, or `==` to replace them with bold, highlight, etc.
 3. **Run Extraction**
     - Click the **Extract Blocks** button.
     - The plugin will:
