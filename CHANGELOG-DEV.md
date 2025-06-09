@@ -1,3 +1,10 @@
+## 1.2.0 (2025-06-09)
+
+* feat: add parent block hierarchy rendering support ([aad27d5](https://github.com/inchanS/logseq-block-extractor/commit/aad27d5))
+* docs: edit README.md ([500dd37](https://github.com/inchanS/logseq-block-extractor/commit/500dd37))
+
+
+
 ## 1.1.0 (2025-06-09)
 
 * feat: add link replacement options to dialog UI ([64d503a](https://github.com/inchanS/logseq-block-extractor/commit/64d503a))
