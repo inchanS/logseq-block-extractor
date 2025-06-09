@@ -1,3 +1,12 @@
+## [1.3.2](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.1...v1.3.2) (2025-06-09)
+
+
+### Bug Fixes
+
+* optimize dialog layout with horizontal arrangement ([24bac86](https://github.com/inchanS/logseq-block-extractor/commit/24bac8630048eb8b67eb47eb1b966346da088c55))
+
+
+
 ## [1.3.1](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.0...v1.3.1) (2025-06-09)
 
 

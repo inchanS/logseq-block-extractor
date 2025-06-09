@@ -1,3 +1,9 @@
+## <small>1.3.2 (2025-06-09)</small>
+
+* fix: optimize dialog layout with horizontal arrangement ([24bac86](https://github.com/inchanS/logseq-block-extractor/commit/24bac86))
+
+
+
 ## <small>1.3.1 (2025-06-09)</small>
 
 * fix: reduce dialog UI size for better user experience ([f8978f0](https://github.com/inchanS/logseq-block-extractor/commit/f8978f0))
