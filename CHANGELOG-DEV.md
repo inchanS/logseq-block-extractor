@@ -1,3 +1,9 @@
+## <small>1.3.1 (2025-06-09)</small>
+
+* fix: reduce dialog UI size for better user experience ([f8978f0](https://github.com/inchanS/logseq-block-extractor/commit/f8978f0))
+
+
+
 ## 1.3.0 (2025-06-09)
 
 * feat: add "Exclude Parent Blocks" option to hierarchy rendering ([ac28387](https://github.com/inchanS/logseq-block-extractor/commit/ac28387))

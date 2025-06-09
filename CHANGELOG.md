@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.0...v1.3.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* reduce dialog UI size for better user experience ([f8978f0](https://github.com/inchanS/logseq-block-extractor/commit/f8978f06b96cc2fcfac5d1b9495f95486bba1d29))
+
+
+
 # [1.3.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.2.0...v1.3.0) (2025-06-09)
 
 
