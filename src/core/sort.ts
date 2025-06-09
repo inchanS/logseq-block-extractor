@@ -44,19 +44,35 @@ export function getSortValue(block: BlockEntity, validSortField: string) {
         const pageProps = block.page?.properties || {};
         const blockProps = block.properties || {};
 
-        sortValue = pageProps[validSortField] ||
+        let rawValue = pageProps[validSortField] ||
             pageProps[`:${validSortField}`] ||
             blockProps[validSortField] ||
             blockProps[`:${validSortField}`] ||
             block.page?.[validSortField] ||
             null;
 
+        // Logseq 프로퍼티가 배열 형태인 경우 첫 번째 요소 추출
+        if (Array.isArray(rawValue) && rawValue.length > 0) {
+            sortValue = rawValue[0];
+        } else {
+            sortValue = rawValue;
+        }
+
+        console.log('Raw value:', rawValue, 'Extracted sortValue:', sortValue);
+
         // 날짜 형태의 값 처리
         if (validSortField.includes('date') || validSortField.includes('created') || validSortField.includes('updated')) {
             if (typeof sortValue === 'number') {
                 sortValue = sortValue;
             } else if (typeof sortValue === 'string') {
-                const dateValue = new Date(sortValue).getTime();
+                // 언더스코어를 하이픈으로 변경: 2025_03_29 → 2025-03-29
+                let cleanDateString = sortValue.replace(/_/g, '-');
+
+                console.log('Cleaned date string:', cleanDateString);
+
+                const dateValue = new Date(cleanDateString).getTime();
+                console.log('Parsed timestamp:', dateValue);
+
                 sortValue = isNaN(dateValue) ? null : dateValue;
             } else {
                 sortValue = null;
