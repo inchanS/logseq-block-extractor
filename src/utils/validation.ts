@@ -6,13 +6,13 @@ export async function validateAndSetDefaultSortField(sortField: string) {
         return 'filename';
     }
 
-    const trimmedSortField = sortField.trim();
+    const trimmedSortField: string = sortField.trim();
 
     if (trimmedSortField === 'filename') {
         return 'filename';
     }
 
-    const commonSystemFields = [
+    const commonSystemFields: string[] = [
         'date', 'created-at', 'updated-at', 'tags', 'alias',
         'created_at', 'updated_at', 'journal-day', 'journal_day'
     ];
@@ -23,10 +23,10 @@ export async function validateAndSetDefaultSortField(sortField: string) {
     }
 
     try {
-        const allProperties: any[] = await getAllProperties();
+        const allProperties: string[] = await getAllProperties();
 
-        const normalizedField = trimmedSortField.toLowerCase();
-        const validProperty = allProperties.find(prop =>
+        const normalizedField: string = trimmedSortField.toLowerCase();
+        const validProperty: string | undefined = allProperties.find((prop: string) =>
             prop.toLowerCase() === normalizedField
         );
 

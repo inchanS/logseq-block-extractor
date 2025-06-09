@@ -1,3 +1,6 @@
+import {PageEntity} from "../types/LogseqAPITypeDefinitions";
+import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
+
 export async function getAllPages() {
     try {
         const pages = await logseq.DB.datascriptQuery(`
@@ -20,11 +23,11 @@ export async function getAllPages() {
     }
 }
 
-export async function getAllProperties() {
+export async function getAllProperties(): Promise<string[]> {
     try {
         console.log('Fetching properties from current graph...');
 
-        let allPropertyKeys = new Set();
+        let allPropertyKeys: Set<string> = new Set();
 
         // 블록 프로퍼티 쿼리
         try {
@@ -72,8 +75,8 @@ export async function getAllProperties() {
                     if (propResult && propResult[0]) {
                         const props = propResult[0];
                         if (typeof props === 'object' && props !== null) {
-                            Object.keys(props).forEach(key => {
-                                let cleanKey = key;
+                            Object.keys(props).forEach((key: string) => {
+                                let cleanKey: string = key;
                                 if (typeof key === 'string') {
                                     cleanKey = key.replace(/^:+/, '');
                                 }
@@ -91,7 +94,7 @@ export async function getAllProperties() {
 
         // 현재 페이지 프로퍼티 확인
         try {
-            const currentPage = await logseq.Editor.getCurrentPage();
+            const currentPage: PageEntity | BlockEntity | null = await logseq.Editor.getCurrentPage();
             if (currentPage && currentPage.properties) {
                 Object.keys(currentPage.properties).forEach(key => {
                     let cleanKey = key.replace(/^:+/, '');
@@ -105,7 +108,7 @@ export async function getAllProperties() {
         }
 
         // 시스템 프로퍼티 제외 및 정리
-        const actualProperties = Array.from(allPropertyKeys)
+        const actualProperties: string[] = Array.from(allPropertyKeys)
             .filter((key: any) => {
                 return !key.startsWith('block/') &&
                     !key.startsWith('page/') &&
@@ -118,14 +121,14 @@ export async function getAllProperties() {
             .sort();
 
         // 기본 프로퍼티들 추가
-        const commonProperties = ['date', 'created-at', 'updated-at', 'tags', 'alias'];
-        commonProperties.forEach(prop => {
+        const commonProperties: string[] = ['date', 'created-at', 'updated-at', 'tags', 'alias'];
+        commonProperties.forEach((prop: string) => {
             if (!actualProperties.includes(prop)) {
                 actualProperties.push(prop);
             }
         });
 
-        const finalProperties = ['filename', ...actualProperties.sort()];
+        const finalProperties: string[] = ['filename', ...actualProperties.sort()];
 
         if (finalProperties.length <= 1) {
             return ['filename', 'date', 'created-at', 'updated-at', 'tags'];
@@ -140,7 +143,7 @@ export async function getAllProperties() {
     }
 }
 
-export async function getBlocksReferencingTag(primaryTag: string) {
+export async function getBlocksReferencingTag(primaryTag: string): Promise<string> {
     return await logseq.DB.datascriptQuery(`
       [:find (pull ?b [:block/uuid :block/content :block/created-at 
                        {:block/page [:block/name :block/created-at :block/journal-day 

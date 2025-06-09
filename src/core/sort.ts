@@ -1,4 +1,7 @@
-export function sortResults(filteredResults: any[], sortOrder:string, validSortField:string) {
+import {ExtendedBlockEntity} from "../types/LogseqAPITypeDefinitions";
+import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
+
+export function sortResults(filteredResults: ExtendedBlockEntity[], sortOrder:string, validSortField:string) {
     if (validSortField === 'filename') {
         // 파일명 정렬
         if (sortOrder === 'desc') {
@@ -31,7 +34,7 @@ export function sortResults(filteredResults: any[], sortOrder:string, validSortF
     }
 }
 
-export function getSortValue(block: any, validSortField: string) {
+export function getSortValue(block: BlockEntity, validSortField: string) {
     let sortValue;
     let secondarySortValue = block.page?.name || 'Unnamed Page';
 

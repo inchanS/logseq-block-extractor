@@ -1,4 +1,8 @@
-export function renderBlockWithChildren(block: { content: string; children: any[]; }, indent = 0, maxDepth = 10) {
+import {ExtendedBlockEntity} from "../types/LogseqAPITypeDefinitions";
+import {BlockEntity, BlockUUIDTuple} from "@logseq/libs/dist/LSPlugin";
+
+
+export function renderBlockWithChildren(block: BlockEntity, indent: number = 0, maxDepth: number = 10): string {
     if (!block || !block.content || indent > maxDepth) return '';
 
     let content = '';
@@ -6,16 +10,23 @@ export function renderBlockWithChildren(block: { content: string; children: any[
 
     content += indentStr + '- ' + block.content + '\n';
 
+    // 타입 가드 함수 정의
+    function isBlockEntity(item: BlockEntity | BlockUUIDTuple): item is BlockEntity {
+        return typeof item === 'object' && item !== null && 'id' in item;
+    }
+
     if (block.children && Array.isArray(block.children) && block.children.length > 0) {
-        block.children.forEach(child => {
-            content += renderBlockWithChildren(child, indent + 1, maxDepth);
-        });
+        block.children
+            .filter(isBlockEntity) // 타입 가드로 BlockEntity만 필터링
+            .forEach((child: BlockEntity) => {
+                content += renderBlockWithChildren(child, indent + 1, maxDepth);
+            });
     }
 
     return content;
 }
 
-export function generateMarkdown(primaryTag:string, filterKeywords:string[], validSortField:string, sortOrder:string, filteredResults: string[]) {
+export function generateMarkdown(primaryTag:string, filterKeywords:string[], validSortField:string, sortOrder:string, filteredResults: ExtendedBlockEntity[] ): string {
     const hasFilter = filterKeywords && filterKeywords.length > 0;
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
     const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
@@ -33,8 +44,8 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
     markdown += `3. Sort by: **${fieldText}** (${sortText})  \n\n`;
     markdown += `A total of **${filteredResults.length} blocks** found  \n\n`;
 
-    filteredResults.forEach((item: any, index: number) => {
-        markdown += `## ${index + 1}. ${item.page.name}\n\n`;
+    filteredResults.forEach((item: ExtendedBlockEntity, index: number) => {
+        markdown += `## ${index + 1}. ${item.block.page.name}\n\n`;
         markdown += renderBlockWithChildren(item.block);
         markdown += "\n---\n\n";
     });
@@ -42,7 +53,7 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
     return markdown;
 }
 
-export function downloadMarkdown(content: any, filename: string) {
+export function downloadMarkdown(content: string, filename: string) {
     try {
         const blob = new Blob([content], {type: 'text/markdown;charset=utf-8;'});
         const url = URL.createObjectURL(blob);

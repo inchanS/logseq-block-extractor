@@ -1,8 +1,12 @@
 import {getBlocksReferencingTag} from '../data/query';
 import {filterBlocksByKeyword} from './filter';
-import {sortResults, getSortValue} from './sort';
-import {generateMarkdown, downloadMarkdown, generateFilename} from '../utils/markdown';
+import {getSortValue, sortResults} from './sort';
+import {downloadMarkdown, generateFilename, generateMarkdown} from '../utils/markdown';
 import {validateAndSetDefaultSortField} from "../utils/validation";
+import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
+import {ExtendedBlockEntity} from "../types/LogseqAPITypeDefinitions";
+
+type SortOption = 'ascending' | 'descending';
 
 export async function extractFilteredBlocks(
     primaryTag: string,
@@ -12,16 +16,16 @@ export async function extractFilteredBlocks(
     filterMode: 'and' | 'or' = 'or'
 ) {
     try {
-        const validSortField = await validateAndSetDefaultSortField(sortField);
+        const validSortField: string = await validateAndSetDefaultSortField(sortField);
 
-        const hasFilter = filterKeywords && filterKeywords.length > 0;
-        const filterText = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
-        const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
-        const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
+        const hasFilter: boolean = filterKeywords && filterKeywords.length > 0;
+        const filterText: string = hasFilter ? `with filter: ${filterKeywords.join(', ')}` : 'without filter (all blocks)';
+        const sortText: SortOption = sortOrder === 'asc' ? 'ascending' : 'descending';
+        const fieldText: string = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
 
         logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} by ${fieldText})`, 'info');
 
-        const results = await getBlocksReferencingTag(primaryTag);
+        const results: string = await getBlocksReferencingTag(primaryTag);
 
         if (!results || results.length === 0) {
             logseq.UI.showMsg(`No blocks found referencing "${primaryTag}"`, 'warning');
@@ -31,24 +35,24 @@ export async function extractFilteredBlocks(
         console.log(`Found ${results.length} blocks referencing ${primaryTag}`);
         logseq.UI.showMsg(`Processing ${results.length} blocks...`, 'info');
 
-        let filteredResults: any[] = [];
-        let processedCount = 0;
+        let filteredResults: ExtendedBlockEntity[] = [];
+        let processedCount: number = 0;
 
         for (const result of results) {
             try {
-                const block = Array.isArray(result) ? result[0] : result;
+                const block: BlockEntity = Array.isArray(result) ? result[0] : result;
 
                 if (!block || !block.uuid) {
                     console.warn('Invalid block found:', block);
                     continue;
                 }
 
-                const fullBlock = await logseq.Editor.getBlock(block.uuid, {
+                const fullBlock: BlockEntity | null = await logseq.Editor.getBlock(block.uuid, {
                     includeChildren: true
                 });
 
                 if (fullBlock) {
-                    let processedBlock;
+                    let processedBlock: BlockEntity | null;
 
                     if (hasFilter) {
                         processedBlock = filterBlocksByKeyword(fullBlock, filterKeywords, filterMode);
@@ -61,7 +65,6 @@ export async function extractFilteredBlocks(
 
                         filteredResults.push({
                             block: processedBlock,
-                            page: block.page,
                             sortValue: sortValue,
                             secondarySortValue: secondarySortValue
                         });
@@ -87,8 +90,8 @@ export async function extractFilteredBlocks(
             return;
         }
 
-        const markdown = generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults);
-        const filename = generateFilename(primaryTag, filterKeywords, validSortField);
+        const markdown: string = generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults);
+        const filename: string = generateFilename(primaryTag, filterKeywords, validSortField);
 
         downloadMarkdown(markdown, filename);
 

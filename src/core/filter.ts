@@ -1,4 +1,6 @@
-export function blockContainsKeywords(block: any, keywords: string[], filterMode: 'and' | 'or' = 'or') {
+import {BlockEntity, BlockUUIDTuple} from "@logseq/libs/dist/LSPlugin";
+
+export function blockContainsKeywords(block: BlockEntity, keywords: string[], filterMode: 'and' | 'or' = 'or') {
     if (!block || !block.content) return false;
 
     const content = block.content.toLowerCase();
@@ -25,10 +27,15 @@ export function blockContainsKeywords(block: any, keywords: string[], filterMode
     }
 }
 
-export function filterBlocksByKeyword(block: any, keywords: string[], filterMode: 'and' | 'or' = 'or') {
+// 타입 가드 함수 정의
+function isBlockEntity(item: BlockEntity | BlockUUIDTuple): item is BlockEntity {
+    return typeof item === 'object' && item !== null && 'id' in item;
+}
+
+export function filterBlocksByKeyword(block: BlockEntity, keywords: string[], filterMode: 'and' | 'or' = 'or'): BlockEntity | null {
     if (!block) return null;
 
-    const contentIncludesKeyword = blockContainsKeywords(block, keywords, filterMode);
+    const contentIncludesKeyword: boolean = blockContainsKeywords(block, keywords, filterMode);
 
     if (contentIncludesKeyword) {
         return {
@@ -36,11 +43,12 @@ export function filterBlocksByKeyword(block: any, keywords: string[], filterMode
             children: block.children || []
         };
     } else {
-        let filteredChildren = [];
+        let filteredChildren: BlockEntity[] = [];
         if (block.children && Array.isArray(block.children)) {
             filteredChildren = block.children
-                .map((child:string) => filterBlocksByKeyword(child, keywords, filterMode))
-                .filter((child: string) => child !== null);
+                .filter(isBlockEntity) // BlockEntity만 필터링
+                .map((child: BlockEntity) => filterBlocksByKeyword(child, keywords, filterMode))
+                .filter((child): child is BlockEntity => child !== null);
         }
 
         if (filteredChildren.length > 0) {

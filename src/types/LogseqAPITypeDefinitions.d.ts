@@ -1,4 +1,6 @@
 // Logseq API 타입 정의
+import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
+
 export interface LogseqAPI {
   App: {
     registerCommandPalette: (config: CommandPaletteConfig, callback: () => Promise<void>) => void;
@@ -33,6 +35,17 @@ export interface PageEntity {
   name?: string;
   properties?: Record<string, any>;
   [key: string]: any;
+}
+
+export interface Block {
+  content: string;
+  children: Block[];
+}
+
+interface ExtendedBlockEntity {
+  block: BlockEntity;
+  sortValue: string;
+  secondarySortValue: string;
 }
 
 // 앱 관련 타입 정의

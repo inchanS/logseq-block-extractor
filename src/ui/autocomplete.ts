@@ -4,7 +4,7 @@ export const autoCompleteSelectFieldColor = '#3c7059';
 
 export async function setupAutoComplete() {
     const allPages = await getAllPages();
-    const allProperties = await getAllProperties();
+    const allProperties: string[] = await getAllProperties();
 
     setupFieldAutoComplete('primaryTag', 'primaryTagSuggestions', allPages);
     setupFieldAutoComplete('filterKeywords', 'filterKeywordsSuggestions', allPages, true);
