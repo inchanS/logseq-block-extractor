@@ -1,3 +1,9 @@
+## 1.1.0 (2025-06-09)
+
+* feat: add link replacement options to dialog UI ([64d503a](https://github.com/inchanS/logseq-block-extractor/commit/64d503a))
+
+
+
 ## <small>1.0.6 (2025-06-09)</small>
 
 * fix: resolve date property sorting in Logseq block extraction ([38da3d4](https://github.com/inchanS/logseq-block-extractor/commit/38da3d4))

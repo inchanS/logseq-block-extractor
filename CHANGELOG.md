@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.6...v1.1.0) (2025-06-09)
+
+
+### Features
+
+* add link replacement options to dialog UI ([64d503a](https://github.com/inchanS/logseq-block-extractor/commit/64d503a8afa9a05d5b33023de5a6c25635a563ad))
+
+
+
 ## [1.0.6](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.5...v1.0.6) (2025-06-09)
 
 
