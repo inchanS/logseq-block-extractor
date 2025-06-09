@@ -91,7 +91,7 @@ export async function extractFilteredBlocks(
             return;
         }
 
-        const markdown: string = generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement);
+        const markdown: string = await generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement);
         const filename: string = generateFilename(primaryTag, filterKeywords, validSortField);
 
         downloadMarkdown(markdown, filename);
