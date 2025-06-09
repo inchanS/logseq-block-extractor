@@ -54,6 +54,8 @@ const main = () => {
             const linkOpenInput = parent.document.querySelector('#linkOpen') as HTMLInputElement | null;
             const linkCloseInput = parent.document.querySelector('#linkClose') as HTMLInputElement | null;
 
+            const excludeParentsCheckbox = parent.document.querySelector('#excludeParents') as HTMLInputElement | null;
+
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
             const sortField = sortFieldInput?.value?.trim() || 'filename';
@@ -63,6 +65,9 @@ const main = () => {
             const linkOpen = linkOpenInput?.value || '';
             const linkClose = linkCloseInput?.value || '';
             const linkReplacement = (linkOpen || linkClose) ? { open: linkOpen, close: linkClose } : undefined;
+
+            const isExcludeParentsChecked = excludeParentsCheckbox?.checked === true;
+            const showFullHierarchy = !isExcludeParentsChecked;
 
             if (!primaryTag) {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
@@ -77,7 +82,7 @@ const main = () => {
             }
 
             logseq.provideUI({key: 'block-extractor-input', template: ''});
-            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode, linkReplacement);
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode, linkReplacement, showFullHierarchy);
         },
 
         cancelDialog: () => {

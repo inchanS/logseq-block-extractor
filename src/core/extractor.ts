@@ -14,7 +14,8 @@ export async function extractFilteredBlocks(
     sortOrder: string = 'asc',
     sortField: string = 'filename',
     filterMode: 'and' | 'or' = 'or',
-    linkReplacement?: LinkReplacment
+    linkReplacement?: LinkReplacment,
+    showFullHierarchy: boolean = false
 ) {
     try {
         const validSortField: string = await validateAndSetDefaultSortField(sortField);
@@ -91,7 +92,7 @@ export async function extractFilteredBlocks(
             return;
         }
 
-        const markdown: string = await generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement);
+        const markdown: string = await generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement, showFullHierarchy);
         const filename: string = generateFilename(primaryTag, filterKeywords, validSortField);
 
         downloadMarkdown(markdown, filename);

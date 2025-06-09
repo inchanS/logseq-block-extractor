@@ -97,6 +97,37 @@ export async function showInputDialog() {
                     .sort-option:hover {
                       background-color: var(--ls-tertiary-background-color, #f8f9fa);
                     }
+                    
+                    .filter-option:has(input[type="checkbox"]:checked) {
+                      background-color: var(--ls-secondary-background-color, #e8f4fd);
+                      border-color: var(--ls-link-text-color, #0066cc);
+                      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+                    }
+                    
+                    .filter-option:has(input[type="checkbox"]:checked) .option-text {
+                      font-weight: bold;
+                      color: var(--ls-link-text-color, #0066cc) !important;
+                    }
+                    
+                    .filter-option input[type="checkbox"]:checked {
+                      transform: scale(1.3);
+                      accent-color: var(--ls-link-text-color, #0066cc);
+                      border-color: var(--ls-link-text-color, #0066cc);
+                      background-color: var(--ls-link-text-color, #0066cc);
+                      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+                    }
+                      
+                    /* 체크박스 기본 스타일도 추가 */
+                    .filter-option input[type="checkbox"] {
+                      margin-right: 12px; 
+                      cursor: pointer; 
+                      width: 16px; 
+                      height: 16px; 
+                      accent-color: var(--ls-link-text-color, #0066cc);
+                      border: 2px solid var(--ls-border-color, #ddd);
+                      border-radius: 3px;
+                    }
+
                   </style>
                   
                   <div class="filter-mode-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
@@ -171,6 +202,25 @@ export async function showInputDialog() {
                     </div>
                   </div>
                 </div>
+                
+                <div style="margin-bottom: 24px;">
+                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Hierarchy Options:</label>
+                  
+                  <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 200px; transition: all 0.2s ease; padding: 12px 16px; border-radius: 8px; border: 2px solid transparent; margin-bottom: 8px;">
+                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                        <input type="checkbox" id="excludeParents" 
+                               style="margin-right: 12px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
+                        <span class="option-text">Exclude Parent Blocks</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 6px; display: block; margin-left: 8px;">
+                    Check to exclude parent blocks in the hierarchy. When checked, only the target block and its children will be shown.
+                  </small>
+                </div>
+
 
                 <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px;">
                   <button data-on-click="cancelDialog" style="padding: 10px 16px; 
@@ -211,7 +261,7 @@ export async function showInputDialog() {
             }
         }, 100);
 
-    } catch (error:unknown) {
+    } catch (error: unknown) {
         console.error('Error in showInputDialog:', error);
         if (error instanceof Error) {
             logseq.UI.showMsg(`Error: ${error.message}`, 'error');

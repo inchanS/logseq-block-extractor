@@ -199,7 +199,7 @@ export async function generateMarkdown(
     sortOrder: string,
     filteredResults: ExtendedBlockEntity[],
     linkReplacement?: LinkReplacment,
-    showFullHierarchy: boolean = true
+    showFullHierarchy: boolean = false
 ): Promise<string> {
     const hasFilter = filterKeywords && filterKeywords.length > 0;
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
