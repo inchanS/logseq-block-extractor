@@ -180,43 +180,46 @@ export async function showInputDialog() {
       </div>
     </div>
     
-    <div style="margin-bottom: 12px;">
-      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Link Replacement (optional):</label>
+    <!-- Link Replacement와 Hierarchy Options를 가로로 배치 -->
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Options:</label>
       
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <div style="flex: 1;">
-          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Opening Symbol:</label>
-          <input type="text" id="linkOpen" placeholder="[[ → leave empty for default" 
-                 style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
-                        font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <!-- Link Replacement (2/3 비율) -->
+        <div style="flex: 2;">
+          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Link Replacement (optional):</label>
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+              <input type="text" id="linkOpen" placeholder="[[" 
+                     style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                            font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+            </div>
+            <div style="flex: 1;">
+              <input type="text" id="linkClose" placeholder="]]" 
+                     style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                            font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+            </div>
+          </div>
         </div>
         
+        <!-- Hierarchy Options (1/3 비율) -->
         <div style="flex: 1;">
-          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Closing Symbol:</label>
-          <input type="text" id="linkClose" placeholder="]] → leave empty for default" 
-                 style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
-                        font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-        </div>
-      </div>
-    </div>
-    
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Hierarchy Options:</label>
-      
-      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-        <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 200px; transition: all 0.2s ease; padding: 8px 12px; border-radius: 8px; border: 2px solid transparent; margin-bottom: 6px;">
-          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-            <input type="checkbox" id="excludeParents" 
-                   style="margin-right: 12px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
-            <span class="option-text">Exclude Parent Blocks</span>
-          </label>
+          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Hierarchy:</label>
+          <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 2px solid transparent; height: 32px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+              <input type="checkbox" id="excludeParents" 
+                     style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
+              <span class="option-text">Exclude Parents</span>
+            </label>
+          </div>
         </div>
       </div>
       
-      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 2px; display: block; margin-left: 8px;">
-        Check to exclude parent blocks in the hierarchy. When checked, only the target block and its children will be shown.
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">
+        Leave empty for default Logseq syntax. Check "Exclude Parents" to show only target block and children.
       </small>
     </div>
+
     
     <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px;">
       <button data-on-click="cancelDialog" style="padding: 8px 14px; 
@@ -228,6 +231,8 @@ export async function showInputDialog() {
                                cursor: pointer; color: var(--ls-active-secondary-color, #333); font-weight: bold; transition: all 0.2s ease;">Extract Blocks</button>
     </div>
   </div>
+  
+  
   <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
               background: rgba(0,0,0,0.5); z-index: 999;"></div>
             `,
