@@ -4,7 +4,7 @@ import {getSortValue, sortResults} from './sort';
 import {downloadMarkdown, generateFilename, generateMarkdown} from '../utils/markdown';
 import {validateAndSetDefaultSortField} from "../utils/validation";
 import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
-import {ExtendedBlockEntity} from "../types/LogseqAPITypeDefinitions";
+import {ExtendedBlockEntity, LinkReplacment} from "../types/LogseqAPITypeDefinitions";
 
 type SortOption = 'ascending' | 'descending';
 
@@ -13,7 +13,8 @@ export async function extractFilteredBlocks(
     filterKeywords: string[] = [],
     sortOrder: string = 'asc',
     sortField: string = 'filename',
-    filterMode: 'and' | 'or' = 'or'
+    filterMode: 'and' | 'or' = 'or',
+    linkReplacement?: LinkReplacment
 ) {
     try {
         const validSortField: string = await validateAndSetDefaultSortField(sortField);
@@ -90,7 +91,7 @@ export async function extractFilteredBlocks(
             return;
         }
 
-        const markdown: string = generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults);
+        const markdown: string = generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement);
         const filename: string = generateFilename(primaryTag, filterKeywords, validSortField);
 
         downloadMarkdown(markdown, filename);

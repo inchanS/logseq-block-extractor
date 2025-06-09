@@ -152,6 +152,26 @@ export async function showInputDialog() {
                   </div>
                 </div>
                 
+                <div style="margin-bottom: 48px;">
+                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Link Replacement (optional):</label>
+                  
+                  <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="flex: 1;">
+                      <label style="display: block; margin-bottom: 6px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Opening Symbol:</label>
+                      <input type="text" id="linkOpen" placeholder="[[ → leave empty for default" 
+                             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+                    </div>
+                    
+                    <div style="flex: 1;">
+                      <label style="display: block; margin-bottom: 6px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Closing Symbol:</label>
+                      <input type="text" id="linkClose" placeholder="]] → leave empty for default" 
+                             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+                    </div>
+                  </div>
+                </div>
+
                 <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px;">
                   <button data-on-click="cancelDialog" style="padding: 10px 16px; 
                                               background: var(--ls-tertiary-background-color, #f5f5f5); border: 1px solid var(--ls-border-color, #ddd); 

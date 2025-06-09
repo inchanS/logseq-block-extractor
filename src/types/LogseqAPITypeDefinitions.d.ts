@@ -42,11 +42,13 @@ export interface Block {
   children: Block[];
 }
 
-interface ExtendedBlockEntity {
+export interface ExtendedBlockEntity {
   block: BlockEntity;
   sortValue: string;
   secondarySortValue: string;
 }
+
+export interface LinkReplacment { open: string; close: string; }
 
 // 앱 관련 타입 정의
 export interface DialogState {

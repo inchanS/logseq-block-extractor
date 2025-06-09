@@ -51,11 +51,18 @@ const main = () => {
             const sortOrderRadio = parent.document.querySelector('input[name="sortOrder"]:checked') as HTMLInputElement | null;
             const filterModeRadio = parent.document.querySelector('input[name="filterMode"]:checked') as HTMLInputElement | null;
 
+            const linkOpenInput = parent.document.querySelector('#linkOpen') as HTMLInputElement | null;
+            const linkCloseInput = parent.document.querySelector('#linkClose') as HTMLInputElement | null;
+
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
             const sortField = sortFieldInput?.value?.trim() || 'filename';
             const sortOrder = sortOrderRadio?.value || 'asc';
             const filterMode = filterModeRadio?.value as 'and' | 'or' || 'or';
+
+            const linkOpen = linkOpenInput?.value || '';
+            const linkClose = linkCloseInput?.value || '';
+            const linkReplacement = (linkOpen || linkClose) ? { open: linkOpen, close: linkClose } : undefined;
 
             if (!primaryTag) {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
@@ -70,7 +77,7 @@ const main = () => {
             }
 
             logseq.provideUI({key: 'block-extractor-input', template: ''});
-            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode);
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode, linkReplacement);
         },
 
         cancelDialog: () => {

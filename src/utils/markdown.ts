@@ -1,14 +1,32 @@
-import {ExtendedBlockEntity} from "../types/LogseqAPITypeDefinitions";
+import {ExtendedBlockEntity, LinkReplacment} from "../types/LogseqAPITypeDefinitions";
 import {BlockEntity, BlockUUIDTuple} from "@logseq/libs/dist/LSPlugin";
 
 
-export function renderBlockWithChildren(block: BlockEntity, indent: number = 0, maxDepth: number = 10): string {
+export function renderBlockWithChildren(
+    block: BlockEntity,
+    options?: {
+        indent?: number;
+        maxDepth?: number;
+        linkReplacement?: { open: string, close: string };
+    }
+): string {
+    const { indent = 0, maxDepth = 10, linkReplacement } = options || {};
+
     if (!block || !block.content || indent > maxDepth) return '';
 
     let content = '';
     const indentStr = '  '.repeat(indent);
 
-    content += indentStr + '- ' + block.content + '\n';
+    // 블록 내용에서 [[]]를 사용자 정의 기호로 치환
+    let processedContent = block.content;
+    if (linkReplacement) {
+        processedContent = processedContent.replace(
+            /\[\[([^\]]+)\]\]/g,
+            `${linkReplacement.open}$1${linkReplacement.close}`
+        );
+    }
+
+    content += indentStr + '- ' + processedContent + '\n';
 
     // 타입 가드 함수 정의
     function isBlockEntity(item: BlockEntity | BlockUUIDTuple): item is BlockEntity {
@@ -17,16 +35,16 @@ export function renderBlockWithChildren(block: BlockEntity, indent: number = 0, 
 
     if (block.children && Array.isArray(block.children) && block.children.length > 0) {
         block.children
-            .filter(isBlockEntity) // 타입 가드로 BlockEntity만 필터링
+            .filter(isBlockEntity)
             .forEach((child: BlockEntity) => {
-                content += renderBlockWithChildren(child, indent + 1, maxDepth);
+                content += renderBlockWithChildren(child, {indent: indent + 1, maxDepth, linkReplacement});
             });
     }
 
     return content;
 }
 
-export function generateMarkdown(primaryTag:string, filterKeywords:string[], validSortField:string, sortOrder:string, filteredResults: ExtendedBlockEntity[] ): string {
+export function generateMarkdown(primaryTag: string, filterKeywords: string[], validSortField: string, sortOrder: string, filteredResults: ExtendedBlockEntity[], linkReplacement?: LinkReplacment): string {
     const hasFilter = filterKeywords && filterKeywords.length > 0;
     const sortText = sortOrder === 'asc' ? 'ascending' : 'descending';
     const fieldText = validSortField === 'filename' ? 'filename' : `property: ${validSortField}`;
@@ -46,7 +64,7 @@ export function generateMarkdown(primaryTag:string, filterKeywords:string[], val
 
     filteredResults.forEach((item: ExtendedBlockEntity, index: number) => {
         markdown += `## ${index + 1}. ${item.block.page.name}\n\n`;
-        markdown += renderBlockWithChildren(item.block);
+        markdown += renderBlockWithChildren(item.block, { linkReplacement });
         markdown += "\n---\n\n";
     });
 
