@@ -1,3 +1,12 @@
+## [1.0.6](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.5...v1.0.6) (2025-06-09)
+
+
+### Bug Fixes
+
+* resolve date property sorting in Logseq block extraction ([38da3d4](https://github.com/inchanS/logseq-block-extractor/commit/38da3d46b15d573616818018867496d165a7f53f))
+
+
+
 ## [1.0.5](https://github.com/inchanS/logseq-block-extractor/compare/v1.0.4...v1.0.5) (2025-06-07)
 
 

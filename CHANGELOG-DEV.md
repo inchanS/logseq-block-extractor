@@ -1,3 +1,11 @@
+## <small>1.0.6 (2025-06-09)</small>
+
+* fix: resolve date property sorting in Logseq block extraction ([38da3d4](https://github.com/inchanS/logseq-block-extractor/commit/38da3d4))
+* refactor: add type annotations and improve type safety across codebase ([c2b7884](https://github.com/inchanS/logseq-block-extractor/commit/c2b7884))
+* docs: update UI image, add UI history ([6f9ef5d](https://github.com/inchanS/logseq-block-extractor/commit/6f9ef5d))
+
+
+
 ## <small>1.0.5 (2025-06-07)</small>
 
 * fix: Remove unnecessary parent layer traces that used to appear behind plugins ([380a243](https://github.com/inchanS/logseq-block-extractor/commit/380a243))
