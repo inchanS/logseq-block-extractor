@@ -9,231 +9,227 @@ export async function showInputDialog() {
         logseq.provideUI({
             key,
             template: `
-              <div id="block-extractor-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                          background: var(--ls-primary-background-color, white); border: 2px solid var(--ls-border-color, #ccc); border-radius: 8px; 
-                          padding: 24px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                          min-width: 420px; max-width: 90vw;">
-                <h3 style="margin-top: 0; color: var(--ls-primary-text-color, #333); font-size: 18px;">Block Extractor Settings</h3>
-                <p style="margin-bottom: 16px; color: var(--ls-secondary-text-color, #666); font-size: 14px;">
-                  Extract the Linked References Contents of a Tag (or a Page) to an MD file.
-                </p>
-                
-                <div style="margin-bottom: 18px; position: relative;">
-                  <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Primary Tag:</label>
-                  <input type="text" id="primaryTag" placeholder="e.g., TagName" 
-                         style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-                  <div id="primaryTagSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
-                                                         background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
-                                                         border-top: none; border-radius: 0 0 6px 6px; 
-                                                         max-height: 200px; overflow-y: auto; 
-                                                         display: none; z-index: 1001;"></div>
-                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">Extract the block where this tag (or page) is referenced.</small>
-                </div>
-                
-                <div style="margin-bottom: 18px; position: relative;">
-                  <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Keywords (comma separated, optional):</label>
-                  <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2, -exclude (leave empty for all blocks)" 
-                         style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-                  <div id="filterKeywordsSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
-                                                             background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
-                                                             border-top: none; border-radius: 0 0 6px 6px; 
-                                                             max-height: 200px; overflow-y: auto; 
-                                                             display: none; z-index: 1001;"></div>
-                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;"> Use '-' prefix to exclude keywords (e.g., "coding, -draft" includes coding but excludes draft)</small>
-                </div>
-                
-                <div style="margin-bottom: 18px;">
-                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Mode: (For multiple keywords)</label>
-                  
-                  <!--   라디오 버튼 스타일      -->
-                  <style>
-                    .filter-mode-container,
-                    .sort-order-container {
-                      display: flex;
-                      gap: 16px;
-                      flex-wrap: wrap;
-                    }
-                    
-                    .filter-option,
-                    .sort-option {
-                      transition: all 0.2s ease;
-                      padding: 10px 15px;
-                      border-radius: 8px;
-                      border: 2px solid transparent;
-                      margin-bottom: 8px;
-                      flex: 1;
-                      min-width: 150px;
-                    }
-                    
-                    .filter-option:has(input:checked),
-                    .sort-option:has(input:checked) {
-                      background-color: var(--ls-secondary-background-color, #e8f4fd);
-                      /*border-color: var(--ls-link-text-color, #0066cc);*/
-                      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
-                    }
-                    
-                    .filter-option:has(input:checked) .option-text,
-                    .sort-option:has(input:checked) .option-text {
-                      font-weight: bold;
-                      color: var(--ls-link-text-color, #0066cc) !important;
-                    }
-                    
-                    .filter-option input[type="radio"]:checked,
-                    .sort-option input[type="radio"]:checked {
-                      transform: scale(1.3);
-                      accent-color: var(--ls-link-text-color, #0066cc);
-                    }
-                    
-                    .filter-option input[type="radio"]:checked:not(:focus),
-                    .sort-option input[type="radio"]:checked:not(:focus) {
-                      background-color: #004499; /* 조금 더 어두운 색상 */
-                      accent-color: var(--ls-link-text-color, #0066cc);
-                      box-shadow: 0 0 0 2px #004499;
-                    }
-                                        
-                    .filter-option:hover,
-                    .sort-option:hover {
-                      background-color: var(--ls-tertiary-background-color, #f8f9fa);
-                    }
-                    
-                    .filter-option:has(input[type="checkbox"]:checked) {
-                      background-color: var(--ls-secondary-background-color, #e8f4fd);
-                      border-color: var(--ls-link-text-color, #0066cc);
-                      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
-                    }
-                    
-                    .filter-option:has(input[type="checkbox"]:checked) .option-text {
-                      font-weight: bold;
-                      color: var(--ls-link-text-color, #0066cc) !important;
-                    }
-                    
-                    .filter-option input[type="checkbox"]:checked {
-                      transform: scale(1.3);
-                      accent-color: var(--ls-link-text-color, #0066cc);
-                      border-color: var(--ls-link-text-color, #0066cc);
-                      background-color: var(--ls-link-text-color, #0066cc);
-                      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
-                    }
-                      
-                    /* 체크박스 기본 스타일도 추가 */
-                    .filter-option input[type="checkbox"] {
-                      margin-right: 12px; 
-                      cursor: pointer; 
-                      width: 16px; 
-                      height: 16px; 
-                      accent-color: var(--ls-link-text-color, #0066cc);
-                      border: 2px solid var(--ls-border-color, #ddd);
-                      border-radius: 3px;
-                    }
-
-                  </style>
-                  
-                  <div class="filter-mode-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
-                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
-                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                        <input type="radio" id="filterModeOr" name="filterMode" value="or" checked 
-                               style="margin-right: 12px; cursor: pointer;">
-                        <span class="option-text">Any</span>
-                      </label>
-                    </div>
-                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
-                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                        <input type="radio" id="filterModeAnd" name="filterMode" value="and" 
-                               style="margin-right: 12px; cursor: pointer;">
-                        <span class="option-text">All</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                
-                <div style="margin-bottom: 18px; position: relative;">
-                  <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Field (optional):</label>
-                  <input type="text" id="sortField" placeholder="e.g., date, created-at (leave empty for filename)" 
-                         style="width: 100%; padding: 10px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
-                                font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-                  <div id="sortFieldSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
-                                                       background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
-                                                       border-top: none; border-radius: 0 0 6px 6px; 
-                                                       max-height: 200px; overflow-y: auto; 
-                                                       display: none; z-index: 1001;"></div>
-                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">Enter one property name only (e.g., 'date', 'created-at'). Default: filename if empty.</small>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Order:</label>
-                  
-                  <div class="sort-order-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
-                    <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
-                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                        <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
-                               style="margin-right: 12px; cursor: pointer;">
-                        <span class="sort-text">Ascending (A → Z)</span>
-                      </label>
-                    </div>
-                    
-                    <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
-                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                        <input type="radio" id="sortDesc" name="sortOrder" value="desc" 
-                               style="margin-right: 12px; cursor: pointer;">
-                        <span class="sort-text">Descending (Z → A)</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                
-                <div style="margin-bottom: 48px;">
-                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Link Replacement (optional):</label>
-                  
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="flex: 1;">
-                      <label style="display: block; margin-bottom: 6px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Opening Symbol:</label>
-                      <input type="text" id="linkOpen" placeholder="[[ → leave empty for default" 
-                             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
-                                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-                    </div>
-                    
-                    <div style="flex: 1;">
-                      <label style="display: block; margin-bottom: 6px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Closing Symbol:</label>
-                      <input type="text" id="linkClose" placeholder="]] → leave empty for default" 
-                             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
-                                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
-                    </div>
-                  </div>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                  <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Hierarchy Options:</label>
-                  
-                  <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                    <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 200px; transition: all 0.2s ease; padding: 12px 16px; border-radius: 8px; border: 2px solid transparent; margin-bottom: 8px;">
-                      <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-                        <input type="checkbox" id="excludeParents" 
-                               style="margin-right: 12px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
-                        <span class="option-text">Exclude Parent Blocks</span>
-                      </label>
-                    </div>
-                  </div>
-                  
-                  <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 6px; display: block; margin-left: 8px;">
-                    Check to exclude parent blocks in the hierarchy. When checked, only the target block and its children will be shown.
-                  </small>
-                </div>
-
-
-                <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px;">
-                  <button data-on-click="cancelDialog" style="padding: 10px 16px; 
-                                              background: var(--ls-tertiary-background-color, #f5f5f5); border: 1px solid var(--ls-border-color, #ddd); 
-                                              border-radius: 6px; cursor: pointer; color: var(--ls-primary-text-color, #333);
-                                              font-weight: normal; transition: all 0.2s ease;">Cancel</button>
-                  <button data-on-click="executeExtraction" style="padding: 10px 18px; background: var(--ls-secondary-background-color, #4CAF50); 
-                                               color: white; border: none; border-radius: 6px; 
-                                               cursor: pointer; color: var(--ls-active-secondary-color, #333); font-weight: bold; transition: all 0.2s ease;">Extract Blocks</button>
-                </div>
-              </div>
-              <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                          background: rgba(0,0,0,0.5); z-index: 999;"></div>
+  <div id="block-extractor-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+              background: var(--ls-primary-background-color, white); border: 2px solid var(--ls-border-color, #ccc); border-radius: 8px; 
+              padding: 16px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              min-width: 420px; max-width: 90vw; max-height: 85vh; overflow-y: auto;">
+    <h3 style="margin-top: 0; margin-bottom: 8px; color: var(--ls-primary-text-color, #333); font-size: 18px;">Block Extractor Settings</h3>
+    <p style="margin-bottom: 12px; color: var(--ls-secondary-text-color, #666); font-size: 14px;">
+      Extract the Linked References Contents of a Tag (or a Page) to an MD file.
+    </p>
+    
+    <div style="margin-bottom: 12px; position: relative;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Primary Tag:</label>
+      <input type="text" id="primaryTag" placeholder="e.g., TagName" 
+             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
+                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+      <div id="primaryTagSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                             background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
+                                             border-top: none; border-radius: 0 0 6px 6px; 
+                                             max-height: 200px; overflow-y: auto; 
+                                             display: none; z-index: 1001;"></div>
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 2px; display: block;">Extract the block where this tag (or page) is referenced.</small>
+    </div>
+    
+    <div style="margin-bottom: 12px; position: relative;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Keywords (comma separated, optional):</label>
+      <input type="text" id="filterKeywords" placeholder="e.g., keyword1, keyword2, -exclude (leave empty for all blocks)" 
+             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
+                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+      <div id="filterKeywordsSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                                 background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
+                                                 border-top: none; border-radius: 0 0 6px 6px; 
+                                                 max-height: 200px; overflow-y: auto; 
+                                                 display: none; z-index: 1001;"></div>
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 2px; display: block;"> Use '-' prefix to exclude keywords (e.g., "coding, -draft" includes coding but excludes draft)</small>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Filter Mode: (For multiple keywords)</label>
+      
+      <!--   라디오 버튼 스타일      -->
+      <style>
+        .filter-mode-container,
+        .sort-order-container {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+        
+        .filter-option,
+        .sort-option {
+          transition: all 0.2s ease;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          margin-bottom: 6px;
+          flex: 1;
+          min-width: 150px;
+        }
+        
+        .filter-option:has(input:checked),
+        .sort-option:has(input:checked) {
+          background-color: var(--ls-secondary-background-color, #e8f4fd);
+          box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+        }
+        
+        .filter-option:has(input:checked) .option-text,
+        .sort-option:has(input:checked) .option-text {
+          font-weight: bold;
+          color: var(--ls-link-text-color, #0066cc) !important;
+        }
+        
+        .filter-option input[type="radio"]:checked,
+        .sort-option input[type="radio"]:checked {
+          transform: scale(1.3);
+          accent-color: var(--ls-link-text-color, #0066cc);
+        }
+        
+        .filter-option input[type="radio"]:checked:not(:focus),
+        .sort-option input[type="radio"]:checked:not(:focus) {
+          background-color: #004499;
+          accent-color: var(--ls-link-text-color, #0066cc);
+          box-shadow: 0 0 0 2px #004499;
+        }
+                            
+        .filter-option:hover,
+        .sort-option:hover {
+          background-color: var(--ls-tertiary-background-color, #f8f9fa);
+        }
+        
+        .filter-option:has(input[type="checkbox"]:checked) {
+          background-color: var(--ls-secondary-background-color, #e8f4fd);
+          border-color: var(--ls-link-text-color, #0066cc);
+          box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+        }
+        
+        .filter-option:has(input[type="checkbox"]:checked) .option-text {
+          font-weight: bold;
+          color: var(--ls-link-text-color, #0066cc) !important;
+        }
+        
+        .filter-option input[type="checkbox"]:checked {
+          transform: scale(1.3);
+          accent-color: var(--ls-link-text-color, #0066cc);
+          border-color: var(--ls-link-text-color, #0066cc);
+          background-color: var(--ls-link-text-color, #0066cc);
+          box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+          
+        .filter-option input[type="checkbox"] {
+          margin-right: 12px; 
+          cursor: pointer; 
+          width: 16px; 
+          height: 16px; 
+          accent-color: var(--ls-link-text-color, #0066cc);
+          border: 2px solid var(--ls-border-color, #ddd);
+          border-radius: 3px;
+        }
+      </style>
+      
+      <div class="filter-mode-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+            <input type="radio" id="filterModeOr" name="filterMode" value="or" checked 
+                   style="margin-right: 12px; cursor: pointer;">
+            <span class="option-text">Any</span>
+          </label>
+        </div>
+        <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+            <input type="radio" id="filterModeAnd" name="filterMode" value="and" 
+                   style="margin-right: 12px; cursor: pointer;">
+            <span class="option-text">All</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 12px; position: relative;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Field (optional):</label>
+      <input type="text" id="sortField" placeholder="e.g., date, created-at (leave empty for filename)" 
+             style="width: 100%; padding: 8px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 6px; 
+                    font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+      <div id="sortFieldSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                           background: var(--ls-secondary-background-color, dimgray); border: 1px solid var(--ls-border-color, #ddd); 
+                                           border-top: none; border-radius: 0 0 6px 6px; 
+                                           max-height: 200px; overflow-y: auto; 
+                                           display: none; z-index: 1001;"></div>
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 2px; display: block;">Enter one property name only (e.g., 'date', 'created-at'). Default: filename if empty.</small>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Sort Order:</label>
+      
+      <div class="sort-order-container" style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+            <input type="radio" id="sortAsc" name="sortOrder" value="asc" checked 
+                   style="margin-right: 12px; cursor: pointer;">
+            <span class="sort-text">Ascending (A → Z)</span>
+          </label>
+        </div>
+        
+        <div class="sort-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 150px;">
+          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+            <input type="radio" id="sortDesc" name="sortOrder" value="desc" 
+                   style="margin-right: 12px; cursor: pointer;">
+            <span class="sort-text">Descending (Z → A)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 12px;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Link Replacement (optional):</label>
+      
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <div style="flex: 1;">
+          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Opening Symbol:</label>
+          <input type="text" id="linkOpen" placeholder="[[ → leave empty for default" 
+                 style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                        font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+        </div>
+        
+        <div style="flex: 1;">
+          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Closing Symbol:</label>
+          <input type="text" id="linkClose" placeholder="]] → leave empty for default" 
+                 style="width: 100%; padding: 6px; border: 1px solid var(--ls-border-color, #ddd); border-radius: 4px; 
+                        font-size: 14px; color: var(--ls-link-ref-text-color, #333) !important; background: var(--ls-secondary-background-color, white);">
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-weight: bold; color: var(--ls-primary-text-color, #333);">Hierarchy Options:</label>
+      
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; flex: 1; min-width: 200px; transition: all 0.2s ease; padding: 8px 12px; border-radius: 8px; border: 2px solid transparent; margin-bottom: 6px;">
+          <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+            <input type="checkbox" id="excludeParents" 
+                   style="margin-right: 12px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
+            <span class="option-text">Exclude Parent Blocks</span>
+          </label>
+        </div>
+      </div>
+      
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 2px; display: block; margin-left: 8px;">
+        Check to exclude parent blocks in the hierarchy. When checked, only the target block and its children will be shown.
+      </small>
+    </div>
+    
+    <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px;">
+      <button data-on-click="cancelDialog" style="padding: 8px 14px; 
+                                  background: var(--ls-tertiary-background-color, #f5f5f5); border: 1px solid var(--ls-border-color, #ddd); 
+                                  border-radius: 6px; cursor: pointer; color: var(--ls-primary-text-color, #333);
+                                  font-weight: normal; transition: all 0.2s ease;">Cancel</button>
+      <button data-on-click="executeExtraction" style="padding: 8px 16px; background: var(--ls-secondary-background-color, #4CAF50); 
+                               color: white; border: none; border-radius: 6px; 
+                               cursor: pointer; color: var(--ls-active-secondary-color, #333); font-weight: bold; transition: all 0.2s ease;">Extract Blocks</button>
+    </div>
+  </div>
+  <div data-on-click="cancelDialog" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+              background: rgba(0,0,0,0.5); z-index: 999;"></div>
             `,
             style: {
                 width: 'auto',                    // 필요 최소 크기로 설정
