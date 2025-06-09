@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.2.0...v1.3.0) (2025-06-09)
+
+
+### Features
+
+* add "Exclude Parent Blocks" option to hierarchy rendering ([ac28387](https://github.com/inchanS/logseq-block-extractor/commit/ac2838725a05c3688c7c1e23085cb72aaaf32e7c))
+
+
+
 # [1.2.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.1.0...v1.2.0) (2025-06-09)
 
 
