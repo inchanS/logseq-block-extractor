@@ -26,7 +26,9 @@ export function renderBlockWithChildren(
     if (!block || !block.content || indent > maxDepth) return '';
 
     let content: string = '';
-    const indentStr: string = '  '.repeat(indent);
+
+    // [UPDATE] 공백 2칸을 탭(\t)으로 변경
+    const indentStr: string = '\t'.repeat(indent);
 
     // [UPDATE] 속성 검사를 통해 리스트 접두사(- 또는 1.) 결정
     const isOrdered = hasOrderedListProperty(block.content);
