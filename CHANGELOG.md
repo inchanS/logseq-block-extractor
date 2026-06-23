@@ -1,3 +1,12 @@
+## [1.4.1](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.0...v1.4.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* improve list rendering logic in markdown generation ([87fc6c1](https://github.com/inchanS/logseq-block-extractor/commit/87fc6c17fdcf4b2a6b3ff77c41584310d9eb692a))
+
+
+
 # [1.4.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.2...v1.4.0) (2026-06-23)
 
 

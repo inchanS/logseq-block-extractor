@@ -1,3 +1,10 @@
+## <small>1.4.1 (2026-06-23)</small>
+
+* fix: improve list rendering logic in markdown generation ([87fc6c1](https://github.com/inchanS/logseq-block-extractor/commit/87fc6c1))
+* chore: update UI images for Logseq Block Extractor ([5f15fbb](https://github.com/inchanS/logseq-block-extractor/commit/5f15fbb))
+
+
+
 ## 1.4.0 (2026-06-23)
 
 * chore: bump version to 1.4.0 and update changelog ([8e8d1dd](https://github.com/inchanS/logseq-block-extractor/commit/8e8d1dd))
