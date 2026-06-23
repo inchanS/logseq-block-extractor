@@ -1,3 +1,14 @@
+## 1.4.0 (2026-06-23)
+
+* docs: change UI image ([c682072](https://github.com/inchanS/logseq-block-extractor/commit/c682072))
+* docs: edit README.md ([9015dec](https://github.com/inchanS/logseq-block-extractor/commit/9015dec))
+* docs: edit README.md ([f74de3c](https://github.com/inchanS/logseq-block-extractor/commit/f74de3c))
+* docs: renamed LICENSE ([5ec0d93](https://github.com/inchanS/logseq-block-extractor/commit/5ec0d93))
+* docs: update README to reflect new features and improvements ([a64d9ad](https://github.com/inchanS/logseq-block-extractor/commit/a64d9ad))
+* feat: add "Include Tag Body" option to extract original content ([fc20091](https://github.com/inchanS/logseq-block-extractor/commit/fc20091))
+
+
+
 ## <small>1.3.2 (2025-06-09)</small>
 
 * fix: optimize dialog layout with horizontal arrangement ([24bac86](https://github.com/inchanS/logseq-block-extractor/commit/24bac86))
