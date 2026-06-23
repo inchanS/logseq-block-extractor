@@ -15,7 +15,8 @@ export async function extractFilteredBlocks(
     sortField: string = 'filename',
     filterMode: 'and' | 'or' = 'or',
     linkReplacement?: LinkReplacment,
-    showFullHierarchy: boolean = false
+    showFullHierarchy: boolean = false,
+    includeOriginalContent: boolean = false // [NEW] 원본 문서 포함 여부 옵션
 ) {
     try {
         const validSortField: string = await validateAndSetDefaultSortField(sortField);
@@ -28,6 +29,16 @@ export async function extractFilteredBlocks(
         logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} by ${fieldText})`, 'info');
 
         const results: string = await getBlocksReferencingTag(primaryTag);
+
+        // [NEW] 사용자가 원본 포함 옵션을 선택했을 때만 API를 호출하여 블록 트리를 가져옵니다.
+        let pageBlocksTree: BlockEntity[] | null = null;
+        if (includeOriginalContent) {
+            try {
+                pageBlocksTree = await logseq.Editor.getPageBlocksTree(primaryTag);
+            } catch (e) {
+                console.warn(`Failed to fetch page blocks for ${primaryTag}`, e);
+            }
+        }
 
         if (!results || results.length === 0) {
             logseq.UI.showMsg(`No blocks found referencing "${primaryTag}"`, 'warning');
@@ -92,7 +103,18 @@ export async function extractFilteredBlocks(
             return;
         }
 
-        const markdown: string = await generateMarkdown(primaryTag, filterKeywords, validSortField, sortOrder, filteredResults, linkReplacement, showFullHierarchy);
+        // [UPDATE] generateMarkdown 호출 시 가져온 pageBlocksTree (옵션 미사용 시 null)를 함께 넘겨줍니다.
+        const markdown: string = await generateMarkdown(
+            primaryTag,
+            filterKeywords,
+            validSortField,
+            sortOrder,
+            filteredResults,
+            linkReplacement,
+            showFullHierarchy,
+            pageBlocksTree // 데이터가 있으면 배열, 없으면 null 상태로 전달됨
+        );
+
         const filename: string = generateFilename(primaryTag, filterKeywords, validSortField);
 
         downloadMarkdown(markdown, filename);

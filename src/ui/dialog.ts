@@ -202,21 +202,30 @@ export async function showInputDialog() {
           </div>
         </div>
         
-        <!-- Hierarchy Options (1/3 비율) -->
-        <div style="flex: 1;">
-          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Hierarchy:</label>
-          <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 2px solid transparent; height: 32px;">
-            <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
-              <input type="checkbox" id="excludeParents" 
-                     style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
-              <span class="option-text">Exclude Parents</span>
-            </label>
+        <div style="flex: 1.5;">
+          <label style="display: block; margin-bottom: 4px; font-size: 13px; color: var(--ls-secondary-text-color, #666);">Toggles:</label>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; padding: 4px 8px; border-radius: 6px; border: 2px solid transparent;">
+              <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%;">
+                <input type="checkbox" id="excludeParents" 
+                       style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
+                <span class="option-text">Exclude Parents</span>
+              </label>
+            </div>
+            
+            <div class="filter-option" style="display: flex; align-items: center; cursor: pointer; padding: 4px 8px; border-radius: 6px; border: 2px solid transparent;">
+              <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: var(--ls-primary-text-color, #333); width: 100%; white-space: nowrap;">
+                <input type="checkbox" id="includeOriginalContent" 
+                       style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--ls-link-text-color, #0066cc);">
+                <span class="option-text">Include Tag Body</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
       
-      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 4px; display: block;">
-        Leave empty for default Logseq syntax. Check "Exclude Parents" to show only target block and children.
+      <small style="color: var(--ls-secondary-text-color, #666); font-size: 12px; margin-top: 6px; display: block;">
+        Leave empty for default Logseq syntax. "Exclude Parents" shows only target block and children. "Include Tag Body" appends original page content.
       </small>
     </div>
 

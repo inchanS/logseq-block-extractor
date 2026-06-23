@@ -56,6 +56,9 @@ const main = () => {
 
             const excludeParentsCheckbox = parent.document.querySelector('#excludeParents') as HTMLInputElement | null;
 
+            // [NEW] 새로 추가된 원본 본문 포함 옵션 체크박스 가져오기
+            const includeOriginalContentCheckbox = parent.document.querySelector('#includeOriginalContent') as HTMLInputElement | null;
+
             const primaryTag = primaryTagInput?.value?.trim();
             const filterKeywords = filterKeywordsInput?.value?.trim();
             const sortField = sortFieldInput?.value?.trim() || 'filename';
@@ -68,6 +71,9 @@ const main = () => {
 
             const isExcludeParentsChecked = excludeParentsCheckbox?.checked === true;
             const showFullHierarchy = !isExcludeParentsChecked;
+
+            // [NEW] 체크 여부를 boolean 값으로 추출
+            const includeOriginalContent = includeOriginalContentCheckbox?.checked === true;
 
             if (!primaryTag) {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
@@ -82,7 +88,9 @@ const main = () => {
             }
 
             logseq.provideUI({key: 'block-extractor-input', template: ''});
-            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode, linkReplacement, showFullHierarchy);
+
+            // [UPDATE] extractFilteredBlocks 호출 시 8번째 파라미터로 includeOriginalContent 추가 전달
+            await extractFilteredBlocks(primaryTag, keywords, sortOrder, sortField, filterMode, linkReplacement, showFullHierarchy, includeOriginalContent);
         },
 
         cancelDialog: () => {
