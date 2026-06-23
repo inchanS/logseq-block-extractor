@@ -7,6 +7,15 @@
 
 
 
+# [1.4.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.2...v1.4.0) (2026-06-23)
+
+
+### Features
+
+* add "Include Tag Body" option to extract original content ([fc20091](https://github.com/inchanS/logseq-block-extractor/commit/fc2009154b7117d262bfad72d7753677bad4a17d))
+
+
+
 ## [1.3.2](https://github.com/inchanS/logseq-block-extractor/compare/v1.3.1...v1.3.2) (2025-06-09)
 
 
