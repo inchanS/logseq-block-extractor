@@ -22,9 +22,10 @@
 
 ## 주요 기능
 
-1. **태그 기반 추출**
+1. **태그 기반 추출 및 본문 포함 옵션**
     - 지정한 기본 태그(primary tag) 또는 페이지를 참조하는 블록을 자동으로 검색합니다.
     - 하위 블록까지 모두 포함하여 계층 구조를 유지한 상태로 추출합니다.
+    - **(New!)** 참조된 블록뿐만 아니라, **기본 태그(Primary Tag) 문서 원본의 전체 본문**도 결과물 최상단에 함께 추출할 수 있습니다.
 
 2. **선택적 키워드 필터링**
     - 쉼표로 구분된 키워드 목록을 입력할 수 있습니다.
@@ -33,8 +34,9 @@
     - 키워드 앞에 -(하이픈)을 붙이면, 해당 키워드는 제외 필터로 동작합니다.
     - 필터 키워드를 비워두면, 기본 태그를 참조하는 모든 블록(및 하위 블록)을 추출합니다.
 
-3. **Markdown 내보내기**
+3. **Markdown 내보내기 및 텍스트 자동 정제**
     - 최신 생성 순서(생성 시점이 최신인 순서)대로 정렬된 블록을 Markdown 파일(`.md`)로 생성합니다.
+    - **(New!)** `logseq.order-list-type:: number`와 같은 Logseq 고유의 메타데이터(Properties) 텍스트를 깔끔하게 자동 제거하고, 마크다운 표준 순서형 목록(`1. `)으로 변환하여 다른 에디터에서도 완벽하게 호환됩니다.
     - `PrimaryTag_filtered_keyword1_keyword2.md` 또는 키워드가 없으면 `PrimaryTag_all_blocks.md`라는 이름으로 자동 다운로드됩니다.
 
 
@@ -51,7 +53,7 @@
     - 단축키 설정 가능
     - 에디터 내 슬래시 명령어(`/Extract Filtered Blocks`).
     - 툴바 버튼 추가로 클릭 한 번에 실행 가능.
-- **다운로드 진행시, 파일명  제안**
+- **다운로드 진행시, 파일명 제안**
     - Markdown 파일 다운로드 시, 기본 태그 및 필터링한 키워드, 정렬 방법을 기본 파일명으로 제안합니다.
 - **다크모드 지원**
     - Logseq의 기본 색상 상수를 사용하였기 때문에 대부분의 테마에서도 다크모드를 지원합니다.
@@ -109,11 +111,11 @@
         - **Ascending** : 오름차순으로 선택합니다. (A → Z 및 1 → 9 순서입니다.)
         - **Descending** : 내림차순으로 선택합니다. (Z → A 및 9 → 1 순서입니다.)
         - Sort Order 기능은 문자와 숫자 모두 지원합니다.
-    - **Link Replacement**: 추출한 블럭에서 Logseq의 링크 문자인 `[[`, `]]`를 바꿀 수 있습니다.
+    - **Link Replacement**: 추출한 블럭 및 원본 본문에서 Logseq의 링크 문자인 `[[`, `]]`를 바꿀 수 있습니다.
         - Opening Symbol, Closing Symbol에서 각각 `**`를 입력하거나, `==`를 입력하여 볼드체, 하이라이트 등으로 바꿀 수 있습니다.
-    - **Hierarchy option**: 상위계층 포함 여부를 선택할 수 있습니다.
-        - **Exclude Parents** 체크박스에 체크하면 찾고자 하는 블럭과 그 하위블럭만을 포함합니다.
-        - 체크하지 않으면, 직계 상위 블럭을 함께 내보냅니다. 이는 마치 Logseq의 **"Linked References"**과 거의 유사합니다.
+    - **Toggles (옵션 설정)**:
+        - **Exclude Parents**: 체크하면 찾고자 하는 블럭과 그 하위블럭만을 포함합니다. 체크하지 않으면 직계 상위 블럭을 함께 내보내며, 이는 Logseq의 "Linked References"와 거의 유사합니다.
+        - **Include Tag Body**: 체크하면 대상 문서(Primary Tag) 원본의 본문 내용을 문서 최상단에 함께 추출하여 보여줍니다.
 
 3. **추출 실행**
 
@@ -129,7 +131,7 @@
 
         4. 결과를 페이지 생성 시점 기준으로 사전에 설정된 기준으로 정렬합니다.
 
-        5. 각 블록을 페이지 이름(섹션 헤더) 아래에 계층형 목록(들여쓰기된 `-` 표기)으로 정리한 Markdown 문자열을 만듭니다.
+        5. 각 블록을 페이지 이름(섹션 헤더) 아래에 계층형 목록(들여쓰기된 `-` 표기)으로 정리한 Markdown 문자열을 만듭니다. (이때 Logseq 속성 데이터는 자동 정제됩니다.)
 
         6. 자동으로 `.md` 파일을 다운로드할 수 있는 OS의 창이 나타납니다. 파일명은 다음과 같은 형식입니다:
 
@@ -151,7 +153,7 @@
     - 다운로드된 파일을 마음에 드는 Markdown 뷰어나 텍스트 에디터에서 열어보세요.
     - 추출한 참고내용의 가장 상위 블럭을 기준으로 헤더2단계의 형식으로 정리됩니다.
 
-5. 추출된 Markdown 문서 예시  
+5. **추출된 Markdown 문서 예시**
 
 ```markdown
 # Extracting reference blocks project x
@@ -162,6 +164,15 @@ Search conditions:
 3. Sort by: filename (descending)
 
 A total of 3 blocks found
+
+### Content of [[project X]]
+
+- This is the original content of the project X page.
+1. Ordered list item 1
+2. Ordered list item 2
+- Normal bullet point
+
+---
 
 ## 1. apr 14th, 2025
 

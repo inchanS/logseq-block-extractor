@@ -3,9 +3,9 @@
 # Block Extractor Plugin for Logseq
 
 ![GitHub stars](https://img.shields.io/github/stars/inchans/logseq-block-extractor?style=flat&logo=apachespark)
-![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total?logo=github) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor?logo=rocket)  ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor?logo=gnu)  
+![GitHub all releases](https://img.shields.io/github/downloads/inchanS/logseq-block-extractor/total?logo=github) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/inchanS/logseq-block-extractor?logo=rocket)  ![GitHub](https://img.shields.io/github/license/inchanS/logseq-block-extractor?logo=gnu)
 
-![logo](icon.png)  
+![logo](icon.png)
 
 ## Overview
 
@@ -16,21 +16,23 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
 
 ---
 
- ![Logseq block-extractor UI](asset/logseq-block-extractor.png)  
+![Logseq block-extractor UI](asset/logseq-block-extractor.png)
 
 ## Main Features
 
-1. **Tag-based Extraction**
+1. **Tag-based Extraction & Include Body Option**
     - Automatically searches for blocks referencing a specified primary tag or page.
     - Extracts blocks while maintaining the full hierarchical structure, including all child blocks.
+    - **(New!)** You can now choose to append the **full original content of the Primary Tag document** to the top of the exported results.
 2. **Optional Keyword Filtering**
     - Enter a comma-separated list of keywords.
     - Any block (or descendent) including at least one keyword is included in the results.
     - When entering two or more keywords (comma-separated), you can set the filtering logic to AND or OR between keywords.
     - If you precede a keyword with a `-` (hyphen), that keyword acts as an exclusion filter.
     - If filter keywords are left blank, all blocks (with descendants) referencing the primary tag are extracted.
-3. **Markdown Export**
-    - Blocks are sorted in reverse chronological order (most recently created first) and exported as a Markdown file (`.md`).
+3. **Markdown Export & Auto Text Formatting**
+    - Blocks are sorted by creation date (or your preferred criteria) and exported as a Markdown file (`.md`).
+    - **(New!)** Automatically cleans up Logseq-specific metadata (like `logseq.order-list-type:: number`) and cleanly converts them to standard Markdown ordered lists (`1. `) for perfect compatibility with other markdown editors.
     - The file is automatically downloaded and is named `PrimaryTag_filtered_keyword1_keyword2.md` (or `PrimaryTag_all_blocks.md` if no keywords are used).
 
 ## Features
@@ -64,9 +66,9 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
 2. **Manual Installation**
     - Download the latest `logseq-block-extractor.zip` from the [GitHub Releases page](https://github.com/inchanS/logseq-block-extractor/releases/latest) and unzip it.
     - In Logseq, open Settings > Advanced and **enable Developer mode.**
-      - ![](asset/logseq-settings.png)
+        - ![](asset/logseq-settings.png)
     - Open the Logseq Plugins menu as shown below.
-      - ![](asset/logseq-plugins.png)
+        - ![](asset/logseq-plugins.png)
     - Click the arrow button, select the extracted **folder** to install.
     - Restart or refresh Logseq to load the plugin.
 
@@ -102,21 +104,21 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
         - **Ascending:** A → Z or 1 → 9.
         - **Descending:** Z → A or 9 → 1.
         - Both alphabetic and numeric sorting are supported.
-    - Link Replacement: You can replace the link characters `[[`, `]]` in Logseq in the extracted block.
-        - You can enter `**` for Opening Symbol and Closing Symbol, respectively, or `==` to replace them with bold, highlight, etc.
-    - Hierarchy option: You can choose whether to include the parent hierarchy.
-        - Check the **Exclude Parents** checkbox to include only the block you are looking for and its children.
-        - If unchecked, it will export all immediate parent blocks together. This is almost like Logseq's **“Linked References”**.
+    - **Link Replacement:** You can replace the link characters `[[`, `]]` of Logseq in both the extracted blocks and the included original body content.
+        - You can enter `**` for Opening Symbol and Closing Symbol respectively, or `==` to replace them with bold, highlight, etc.
+    - **Toggles (Hierarchy & Content Options):**
+        - **Exclude Parents:** Check this to include only the targeted block and its children. If unchecked, it will export the immediate parent blocks together (similar to Logseq's "Linked References" view).
+        - **Include Tag Body:** Check this to extract the full original content of the Primary Tag (page) itself and append it to the top of the exported file.
 3. **Run Extraction**
     - Click the **Extract Blocks** button.
     - The plugin will:
 
-4. Query the Logseq database for blocks referencing the primary tag.
-5. Gather each block’s content and up to 10 levels of child blocks.
-6. If filter keywords are set, recursively filter blocks or their descendants that contain the keywords.
-7. Sort results according to the chosen criteria.
-8. Format each block into a hierarchical indented Markdown string, grouped under a section header with the page name.
-9. Prompt you to download a `.md` file. Filename examples:
+        1. Query the Logseq database for blocks referencing the primary tag.
+        2. Gather each block’s content and up to 10 levels of child blocks.
+        3. If filter keywords are set, recursively filter blocks or their descendants that contain the keywords.
+        4. Sort results according to the chosen criteria.
+        5. Format each block into a hierarchical indented Markdown string (auto-cleaning Logseq properties), grouped under a section header with the page name.
+        6. Prompt you to download a `.md` file. Filename examples:
 
 ```
 <PrimaryTag>_filtered_<keyword1>_<keyword2>.md
@@ -148,6 +150,15 @@ Search conditions:
 3. Sort by: filename (descending)
 
 A total of 3 blocks found
+
+### Content of [[project X]]
+
+- This is the original content of the project X page.
+1. Ordered list item 1
+2. Ordered list item 2
+- Normal bullet point
+
+---
 
 ## 1. Apr 14th, 2025
 
