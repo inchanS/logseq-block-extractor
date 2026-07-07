@@ -138,6 +138,10 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
                         input.focus();
                         input.setSelectionRange(input.value.length, input.value.length);
                     }, 10);
+                } else {
+                    // 하이라이트된 항목이 없으면 목록만 닫는다 — 다음 Enter가 추출 실행으로 이어짐
+                    suggestions.style.display = 'none';
+                    currentSuggestionIndex = -1;
                 }
                 break;
 
@@ -163,7 +167,8 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
 
     input.addEventListener('blur', () => {
         setTimeout(() => {
-            if (!suggestions.contains(document.activeElement)) {
+            // 다이얼로그는 parent 문서에 있으므로 해당 문서의 activeElement를 확인해야 한다
+            if (!suggestions.contains(suggestions.ownerDocument.activeElement)) {
                 suggestions.style.display = 'none';
             }
         }, 150);

@@ -5,10 +5,14 @@ import { extractFilteredBlocks } from './core/extractor';
 const main = () => {
     console.log('Block Extractor Plugin loaded');
 
-    // 커맨드 팔레트에 등록
+    // 커맨드 팔레트에 등록 (mod+shift+e 단축키로 마우스 없이 바로 열기)
     logseq.App.registerCommandPalette({
         key: "extract-filtered-blocks",
         label: "Extract Filtered Blocks",
+        keybinding: {
+            binding: 'mod+shift+e',
+            mode: 'global',
+        },
     }, async () => {
         await showInputDialog();
     });
@@ -65,9 +69,19 @@ const main = () => {
             const sortOrder = sortOrderRadio?.value || 'asc';
             const filterMode = filterModeRadio?.value as 'and' | 'or' || 'or';
 
+            const plainTextLinksCheckbox = parent.document.querySelector('#plainTextLinks') as HTMLInputElement | null;
+            const isPlainTextLinks = plainTextLinksCheckbox?.checked === true;
+
             const linkOpen = linkOpenInput?.value || '';
             const linkClose = linkCloseInput?.value || '';
-            const linkReplacement = (linkOpen || linkClose) ? { open: linkOpen, close: linkClose } : undefined;
+            // Plain text 토글 체크 시 괄호를 완전히 제거([[abc]] → abc).
+            // 그 외에는 입력값 사용, 둘 다 비어 있으면 기본값(**)으로 볼드 변환.
+            // Logseq 문법을 유지하려면 [[ 와 ]] 를 직접 입력하면 된다 (치환 결과가 원문과 동일)
+            const linkReplacement = isPlainTextLinks
+                ? { open: '', close: '' }
+                : (linkOpen || linkClose)
+                    ? { open: linkOpen, close: linkClose }
+                    : { open: '**', close: '**' };
 
             const isExcludeParentsChecked = excludeParentsCheckbox?.checked === true;
             const showFullHierarchy = !isExcludeParentsChecked;
@@ -79,6 +93,20 @@ const main = () => {
                 logseq.UI.showMsg("Primary tag is required", 'warning');
                 return;
             }
+
+            // 다음 실행 때 미리 채워둘 수 있도록 마지막 사용 값을 플러그인 설정에 저장
+            logseq.updateSettings({
+                lastPrimaryTag: primaryTag,
+                lastFilterKeywords: filterKeywords || '',
+                lastSortField: sortFieldInput?.value?.trim() || '',
+                lastSortOrder: sortOrder,
+                lastFilterMode: filterMode,
+                lastLinkOpen: linkOpen,
+                lastLinkClose: linkClose,
+                lastPlainTextLinks: isPlainTextLinks,
+                lastExcludeParents: isExcludeParentsChecked,
+                lastIncludeOriginalContent: includeOriginalContent,
+            });
 
             let keywords: string[] = [];
             if (filterKeywords && filterKeywords.length > 0) {
