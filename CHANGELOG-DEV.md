@@ -1,3 +1,10 @@
+## <small>1.4.2 (2026-07-07)</small>
+
+* Update .gitignore ([8f51b94](https://github.com/inchanS/logseq-block-extractor/commit/8f51b94))
+* fix: resolve query, rendering and filename bugs with performance and ([0f02ac4](https://github.com/inchanS/logseq-block-extractor/commit/0f02ac4))
+
+
+
 ## <small>1.4.1 (2026-06-23)</small>
 
 * fix: improve list rendering logic in markdown generation ([87fc6c1](https://github.com/inchanS/logseq-block-extractor/commit/87fc6c1))

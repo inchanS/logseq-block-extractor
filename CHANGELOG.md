@@ -1,3 +1,12 @@
+## [1.4.2](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.1...v1.4.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* resolve query, rendering and filename bugs with performance and ([0f02ac4](https://github.com/inchanS/logseq-block-extractor/commit/0f02ac450165f1d07670406b98ce7784c1d59625))
+
+
+
 ## [1.4.1](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.0...v1.4.1) (2026-06-23)
 
 
