@@ -1,13 +1,18 @@
 #!/bin/bash
 # scripts/version-up.sh
+set -euo pipefail
 
-VERSION=$1
+VERSION=${1:-}
 CLEAN_VERSION=${VERSION#v}
 
 if [ -z "$VERSION" ]; then
   echo "버전을 입력해주세요: npm run dist v1.0.1"
   exit 1
 fi
+
+# 태그를 만들기 전에 테스트와 빌드가 통과하는지 검증
+npm test
+npm run build
 
 # package.json 버전 업데이트
 jq --arg v "$CLEAN_VERSION" '.version=$v' package.json > package.tmp.json && mv package.tmp.json package.json

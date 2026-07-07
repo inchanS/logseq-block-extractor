@@ -377,7 +377,14 @@ function setupDialogEventHandlers() {
 }
 
 function injectDialogStyles() {
-    const style = document.createElement('style');
+    const doc: Document = parent.document.head ? parent.document : document;
+
+    // 다이얼로그를 열 때마다 style 요소가 누적되지 않도록 이미 주입되어 있으면 건너뜀
+    const STYLE_ID = 'block-extractor-dialog-styles';
+    if (doc.getElementById(STYLE_ID)) return;
+
+    const style = doc.createElement('style');
+    style.id = STYLE_ID;
     style.textContent = `
         #primaryTag::placeholder,
         #filterKeywords::placeholder,
@@ -427,9 +434,5 @@ function injectDialogStyles() {
         }
     `;
 
-    if (parent.document.head) {
-        parent.document.head.appendChild(style);
-    } else if (document.head) {
-        document.head.appendChild(style);
-    }
+    doc.head.appendChild(style);
 }

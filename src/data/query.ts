@@ -1,7 +1,15 @@
 import {PageEntity} from "../types/LogseqAPITypeDefinitions";
 import {BlockEntity} from "@logseq/libs/dist/LSPlugin";
 
-export async function getAllPages() {
+// 다이얼로그를 열 때마다 전체 그래프를 재조회하지 않도록 짧은 TTL 캐시 사용
+const CACHE_TTL_MS = 60_000;
+let pagesCache: { data: string[]; fetchedAt: number } | null = null;
+let propertiesCache: { data: string[]; fetchedAt: number } | null = null;
+
+export async function getAllPages(): Promise<string[]> {
+    if (pagesCache && Date.now() - pagesCache.fetchedAt < CACHE_TTL_MS) {
+        return pagesCache.data;
+    }
     try {
         const pages = await logseq.DB.datascriptQuery(`
             [:find (pull ?p [:block/name])
@@ -13,9 +21,12 @@ export async function getAllPages() {
             return [];
         }
 
-        return pages
+        const pageNames = pages
             .map(page => page[0]?.name)
             .filter(name => name && typeof name === 'string' && name.trim());
+
+        pagesCache = { data: pageNames, fetchedAt: Date.now() };
+        return pageNames;
     } catch (error) {
         console.error('Error fetching pages:', error);
         logseq.UI.showMsg('An error occurred while fetching the page list.', 'warning');
@@ -24,6 +35,9 @@ export async function getAllPages() {
 }
 
 export async function getAllProperties(): Promise<string[]> {
+    if (propertiesCache && Date.now() - propertiesCache.fetchedAt < CACHE_TTL_MS) {
+        return propertiesCache.data;
+    }
     try {
         console.log('Fetching properties from current graph...');
 
@@ -134,6 +148,7 @@ export async function getAllProperties(): Promise<string[]> {
             return ['filename', 'date', 'created-at', 'updated-at', 'tags'];
         }
 
+        propertiesCache = { data: finalProperties, fetchedAt: Date.now() };
         return finalProperties;
 
     } catch (error) {
@@ -143,13 +158,20 @@ export async function getAllProperties(): Promise<string[]> {
     }
 }
 
-export async function getBlocksReferencingTag(primaryTag: string): Promise<string> {
+export async function getBlocksReferencingTag(primaryTag: string): Promise<BlockEntity[][] | null> {
+    // Logseq은 :block/name을 소문자로 정규화해 저장하므로 소문자로 변환해 조회
+    // 쿼리 문자열이 깨지지 않도록 백슬래시와 큰따옴표는 이스케이프
+    const escapedTag = primaryTag
+        .toLowerCase()
+        .replace(/\\/g, '\\\\')
+        .replace(/"/g, '\\"');
+
     return await logseq.DB.datascriptQuery(`
-      [:find (pull ?b [:block/uuid :block/content :block/created-at 
-                       {:block/page [:block/name :block/created-at :block/journal-day 
+      [:find (pull ?b [:block/uuid :block/content :block/created-at
+                       {:block/page [:block/name :block/created-at :block/journal-day
                                      :block/journal? :block/properties]}])
        :where
        [?b :block/refs ?p1]
-       [?p1 :block/name "${primaryTag}"]]
+       [?p1 :block/name "${escapedTag}"]]
     `);
 }

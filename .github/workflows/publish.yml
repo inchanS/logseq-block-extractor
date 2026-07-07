@@ -3,10 +3,13 @@ name: Build and Release plugin
 on:
   push:
     tags:
-      - "*"  # 모든 태그 푸시 시 실행
+      - "v*"  # 버전 태그(v1.2.3) 푸시 시에만 실행
 
 env:
   PLUGIN_NAME: logseq-block-extractor
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -21,23 +24,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
 
       - name: Install dependencies
-        run: |
-          npm install -g yarn
-          yarn
+        run: npm ci
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: |
-          yarn build
+          npm run build
           mkdir ${{ env.PLUGIN_NAME }}
-          cp README.md package.json icon.png CHANGELOG.md ${{ env.PLUGIN_NAME }} || true
+          cp README.md package.json icon.png CHANGELOG.md ${{ env.PLUGIN_NAME }}
           mv dist ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip ${{ env.PLUGIN_NAME }}
 
-      - name: Automatic Release with Changelog
-        uses: marvinpinto/action-automatic-releases@latest
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
-          prerelease: false
+          generate_release_notes: true

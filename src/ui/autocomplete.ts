@@ -68,13 +68,18 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
             return;
         }
 
-        suggestions.innerHTML = filteredPages.map((page: string, index: number) => `
-            <div class="suggestion-item" data-index="${index}" data-page="${searchTerm.startsWith('-') ? '-' + page : page}"
-                 style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;
-                        ${index === currentSuggestionIndex ? 'background-color: #f0f0f0;' : ''}">
-                ${page}
-            </div>
-        `).join('');
+        // 페이지 이름에 HTML 특수문자가 있어도 안전하도록 innerHTML 대신 textContent로 생성
+        suggestions.innerHTML = '';
+        const doc: Document = suggestions.ownerDocument;
+        filteredPages.forEach((page: string, index: number) => {
+            const item = doc.createElement('div');
+            item.className = 'suggestion-item';
+            item.dataset.index = String(index);
+            item.dataset.page = searchTerm.startsWith('-') ? '-' + page : page;
+            item.style.cssText = 'padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;';
+            item.textContent = page;
+            suggestions.appendChild(item);
+        });
 
         suggestions.style.display = 'block';
         currentSuggestionIndex = -1;

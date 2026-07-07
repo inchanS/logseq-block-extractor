@@ -81,39 +81,29 @@ export async function renderBlockWithParents(
     const rootBlock: BlockEntity = await findRootParent(block);
 
     // 타겟 블록까지의 전체 경로 구성
-    const fullPath: BlockEntity[] = await buildFullPath(rootBlock, block);
+    const fullPath: BlockEntity[] = buildFullPath(rootBlock, block);
 
     // 경로를 따라 렌더링하되, 타겟 블록에서는 모든 하위 블록 포함
     return renderFullHierarchy(fullPath, block, { indent, maxDepth, linkReplacement });
 }
 
 // 타겟 블록까지의 전체 경로를 구성
-async function buildFullPath(rootBlock: BlockEntity, targetBlock: BlockEntity): Promise<BlockEntity[]> {
+// findRootParent가 includeChildren: true로 전체 트리를 이미 로드했으므로
+// 블록별 API 재조회 없이 메모리 상의 트리를 탐색한다
+function buildFullPath(rootBlock: BlockEntity, targetBlock: BlockEntity): BlockEntity[] {
     const path: BlockEntity[] = [];
 
-    async function findPath(currentBlock: BlockEntity): Promise<boolean> {
+    function findPath(currentBlock: BlockEntity): boolean {
         path.push(currentBlock);
 
         if (currentBlock.id === targetBlock.id) {
             return true;
         }
 
-        // 자식 블록들을 완전히 로드
         if (currentBlock.children && Array.isArray(currentBlock.children)) {
             for (const childRef of currentBlock.children) {
-                if (isBlockEntity(childRef)) {
-                    // 자식 블록의 완전한 정보 로드
-                    try {
-                        const fullChild: BlockEntity | null = await logseq.Editor.getBlock(childRef.id, { includeChildren: true });
-                        if (fullChild && await findPath(fullChild)) {
-                            return true;
-                        }
-                    } catch (error) {
-                        // 블록 로드 실패 시 원본 데이터로 시도
-                        if (await findPath(childRef)) {
-                            return true;
-                        }
-                    }
+                if (isBlockEntity(childRef) && findPath(childRef)) {
+                    return true;
                 }
             }
         }
@@ -122,7 +112,7 @@ async function buildFullPath(rootBlock: BlockEntity, targetBlock: BlockEntity): 
         return false;
     }
 
-    await findPath(rootBlock);
+    findPath(rootBlock);
     return path;
 }
 
@@ -146,7 +136,8 @@ function renderFullHierarchy(
 
         if (currentIndent > maxDepth) break;
 
-        const indentStr: string = '  '.repeat(currentIndent);
+        // renderBlockWithChildren과 동일하게 탭(\t) 인덴트 사용 (혼용 시 중첩 리스트가 깨짐)
+        const indentStr: string = '\t'.repeat(currentIndent);
 
         // [UPDATE] 계층 렌더링 시에도 리스트 접두사 판단 적용
         const isOrdered = hasOrderedListProperty(currentBlock.content || '');
@@ -227,7 +218,7 @@ export function convertPageBlocksToMarkdown(
     if (!blocks || blocks.length === 0) return '';
 
     let result = '';
-    const indent = '  '.repeat(indentLevel);
+    const indent = '\t'.repeat(indentLevel);
 
     for (const block of blocks) {
         if (isBlockEntity(block) && block.content !== undefined) {
@@ -332,8 +323,10 @@ export function downloadMarkdown(content: string, filename: string) {
 }
 
 export function generateFilename(primaryTag: string, filterKeywords: string[], validSortField: string) {
+    // 계층 페이지(project/sub)의 '/' 등 파일명에 쓸 수 없는 문자를 '_'로 치환
+    const safeTag = primaryTag.replace(/[\/\\:*?"<>|]/g, '_');
     const hasFilter = filterKeywords && filterKeywords.length > 0;
     const filterSuffix = hasFilter ? `_filtered_${filterKeywords.join('_').replace(/[^a-zA-Z0-9가-힣_]/g, '_')}` : '_all_blocks';
     const sortSuffix = validSortField !== 'filename' ? `_sortBy_${validSortField}` : '';
-    return `${primaryTag}${filterSuffix}${sortSuffix}.md`;
+    return `${safeTag}${filterSuffix}${sortSuffix}.md`;
 }

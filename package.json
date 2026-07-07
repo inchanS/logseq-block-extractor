@@ -10,11 +10,12 @@
     "icon": "./icon.png"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist && rm -f logseq-block-extractor.zip",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist && rm -f logseq-block-extractor*.zip",
     "dev": "npm run clean && vite",
     "build": "npm run clean && tsc && vite build",
-    "pack": "npm run build && zip -qq -r logseq-block-extractor-$(node -p \"require('./package.json').version\").zip dist readme.md LICENSE package.json *.png",
+    "pack": "npm run build && zip -qq -r logseq-block-extractor-$(node -p \"require('./package.json').version\").zip dist README.md LICENSE package.json *.png",
     "preview": "vite preview",
     "watch": "npm run clean && vite build --watch",
     "dist": "sh version.sh"
@@ -34,13 +35,14 @@
   "author": "Inchan Song",
   "license": "GPL-3.0",
   "dependencies": {
-    "@logseq/libs": "^0.2.1",
-    "conventional-changelog": "^7.0.2"
+    "@logseq/libs": "^0.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
+    "conventional-changelog": "^7.0.2",
     "conventional-changelog-angular": "^8.0.0",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

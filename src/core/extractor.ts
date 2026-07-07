@@ -28,7 +28,7 @@ export async function extractFilteredBlocks(
 
         logseq.UI.showMsg(`Extracting blocks for tag: ${primaryTag} ${filterText} (${sortText} by ${fieldText})`, 'info');
 
-        const results: string = await getBlocksReferencingTag(primaryTag);
+        const results: BlockEntity[][] | null = await getBlocksReferencingTag(primaryTag);
 
         // [NEW] 사용자가 원본 포함 옵션을 선택했을 때만 API를 호출하여 블록 트리를 가져옵니다.
         let pageBlocksTree: BlockEntity[] | null = null;
@@ -48,51 +48,52 @@ export async function extractFilteredBlocks(
         console.log(`Found ${results.length} blocks referencing ${primaryTag}`);
         logseq.UI.showMsg(`Processing ${results.length} blocks...`, 'info');
 
-        let filteredResults: ExtendedBlockEntity[] = [];
-        let processedCount: number = 0;
+        const filteredResults: ExtendedBlockEntity[] = [];
 
-        for (const result of results) {
-            try {
-                const block: BlockEntity = Array.isArray(result) ? result[0] : result;
+        // 블록마다 순차 await하면 대형 그래프에서 매우 느려지므로 배치 단위로 병렬 처리
+        const CONCURRENCY = 10;
 
-                if (!block || !block.uuid) {
-                    console.warn('Invalid block found:', block);
-                    continue;
-                }
+        for (let i = 0; i < results.length; i += CONCURRENCY) {
+            const batch = results.slice(i, i + CONCURRENCY);
 
-                const fullBlock: BlockEntity | null = await logseq.Editor.getBlock(block.uuid, {
-                    includeChildren: true
-                });
+            const processed: (ExtendedBlockEntity | null)[] = await Promise.all(
+                batch.map(async (result): Promise<ExtendedBlockEntity | null> => {
+                    try {
+                        const block: BlockEntity = Array.isArray(result) ? result[0] : result;
 
-                if (fullBlock) {
-                    let processedBlock: BlockEntity | null;
+                        if (!block || !block.uuid) {
+                            console.warn('Invalid block found:', block);
+                            return null;
+                        }
 
-                    if (hasFilter) {
-                        processedBlock = filterBlocksByKeyword(fullBlock, filterKeywords, filterMode);
-                    } else {
-                        processedBlock = fullBlock;
-                    }
+                        const fullBlock: BlockEntity | null = await logseq.Editor.getBlock(block.uuid, {
+                            includeChildren: true
+                        });
 
-                    if (processedBlock) {
+                        if (!fullBlock) return null;
+
+                        const processedBlock: BlockEntity | null = hasFilter
+                            ? filterBlocksByKeyword(fullBlock, filterKeywords, filterMode)
+                            : fullBlock;
+
+                        if (!processedBlock) return null;
+
                         const {sortValue, secondarySortValue} = getSortValue(block, validSortField);
 
-                        filteredResults.push({
+                        return {
                             block: processedBlock,
                             sortValue: sortValue,
                             secondarySortValue: secondarySortValue
-                        });
+                        };
+                    } catch (blockError) {
+                        console.error('Error processing block:', blockError);
+                        return null;
                     }
-                }
+                })
+            );
 
-                processedCount++;
-
-                if (processedCount % 10 === 0) {
-                    console.log(`Processed ${processedCount}/${results.length} blocks...`);
-                }
-            } catch (blockError) {
-                console.error('Error processing block:', blockError);
-                processedCount++;
-                continue;
+            for (const item of processed) {
+                if (item) filteredResults.push(item);
             }
         }
 
