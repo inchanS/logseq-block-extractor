@@ -21,19 +21,27 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
 ## Main Features
 
 1. **Tag-based Extraction & Include Body Option**
-    - Automatically searches for blocks referencing a specified primary tag or page.
+    - Automatically searches for blocks referencing a specified primary tag or page (matched case-insensitively).
     - Extracts blocks while maintaining the full hierarchical structure, including all child blocks.
-    - **(New!)** You can now choose to append the **full original content of the Primary Tag document** to the top of the exported results.
+    - You can also choose to append the **full original content of the Primary Tag document** to the top of the exported results.
 2. **Optional Keyword Filtering**
     - Enter a comma-separated list of keywords.
     - Any block (or descendent) including at least one keyword is included in the results.
-    - When entering two or more keywords (comma-separated), you can set the filtering logic to AND or OR between keywords.
+    - When entering two or more keywords (comma-separated), you can set the filtering logic to **All** (AND) or **Any** (OR) between keywords.
     - If you precede a keyword with a `-` (hyphen), that keyword acts as an exclusion filter.
     - If filter keywords are left blank, all blocks (with descendants) referencing the primary tag are extracted.
 3. **Markdown Export & Auto Text Formatting**
-    - Blocks are sorted by creation date (or your preferred criteria) and exported as a Markdown file (`.md`).
-    - **(New!)** Automatically cleans up Logseq-specific metadata (like `logseq.order-list-type:: number`) and cleanly converts them to standard Markdown ordered lists (`1. `) for perfect compatibility with other markdown editors.
+    - Blocks are sorted by page name by default — or by any property you choose — and exported as a Markdown file (`.md`).
+    - Automatically cleans up Logseq-specific metadata (like `logseq.order-list-type:: number`) and cleanly converts them to standard Markdown ordered lists (`1. `) for perfect compatibility with other markdown editors.
+    - **(New in 2.0!)** Flexible link formatting: by default, `[[links]]` are converted to **bold** text. You can enter custom opening/closing symbols (e.g., `==` for highlight), enter `[[` and `]]` to keep the original Logseq syntax, or check **Plain text** to strip the brackets entirely (`[[abc]]` → `abc`).
     - The file is automatically downloaded and is named `PrimaryTag_filtered_keyword1_keyword2.md` (or `PrimaryTag_all_blocks.md` if no keywords are used).
+4. **(New in 2.0!) Full Keyboard Workflow**
+    - Open the dialog with **`Cmd+Shift+E`** (macOS) / **`Ctrl+Shift+E`** (Windows/Linux), run extraction with **`Cmd/Ctrl+Enter`**, close with **`Esc`** — a complete extraction without ever touching the mouse.
+    - A clear accent-colored focus ring shows exactly where you are while Tab-cycling, and shortcut hints are displayed right on the buttons.
+5. **(New in 2.0!) Remembers Your Last Settings**
+    - Every input is saved when you run an extraction and prefilled the next time the dialog opens.
+    - Re-run your previous extraction with just two actions: open the dialog → `Cmd/Ctrl+Enter`.
+    - On first use, the Primary Tag defaults to the page you are currently viewing.
 
 ## Features
 
@@ -41,17 +49,19 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
     - When you enter at least two characters, matching page titles appear in an autocomplete list (supports English, Korean, etc.).
     - This is identical to the list that appears when you type `[[` in Logseq's editor.
     - Autocomplete is available for both the Primary Tag and Filter Keywords fields.
-    - For the Sort Field, only properties are suggested.
+    - For the Sort By field, only properties are suggested.
         - (Example: if you used `date:: [[2025_06_05]]` in a page, the key becomes a property.)
+- **Redesigned Compact Dialog (2.0)**
+    - Frequently used fields (tag, keywords, sort) are up front; less-used options (link replacement, hierarchy toggles) are collapsed into an **Advanced** section.
+    - When collapsed, small chips on the Advanced header summarize its current settings at a glance (e.g., `links: bold`, `no parents`).
+    - A **live filename preview** at the bottom shows the exact name of the file you are about to export.
 - **Various Execution Methods**
-    - Can be triggered from the Command Palette.
-    - Keyboard shortcuts can be configured.
+    - Command Palette, with the default shortcut `Cmd/Ctrl+Shift+E` (customizable in Logseq Settings → Keymap).
     - Available as a slash command in the editor (`/Extract Filtered Blocks`).
     - Toolbar button for one-click access.
-- **Filename Suggestion During Download**
-    - When downloading the Markdown, the default filename will include the primary tag, any filter keywords, and sort options.
+    - Block context menu (right-click a block bullet).
 - **Dark Mode Support**
-    - Uses Logseq's color constants, so it is compatible with dark mode in most themes.
+    - All colors follow Logseq's theme variables, so the dialog always matches your current Logseq theme — light, dark, or custom.
 - **Supports Up to 10 Hierarchy Levels**
     - Extracted child blocks go up to a depth of 10.
     - (A setting for custom depth is planned for a future release.)
@@ -77,9 +87,11 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
 ## How to Use
 
 1. **Open the Plugin Dialog**
-    - Open the Command Palette (`Cmd+Shift+P` or `Ctrl+P`), search for **Extract Filtered Blocks**, or use a configured shortcut.
-    - In any page or journal, enter `/Extract Filtered Blocks` and select it.
-    - Click the toolbar button/icon to open the dialog.
+    - Press the default shortcut **`Cmd+Shift+E`** (macOS) / **`Ctrl+Shift+E`** (Windows/Linux).
+    - Or open the Command Palette (`Cmd+Shift+P` or `Ctrl+P`) and search for **Extract Filtered Blocks**.
+    - Or in any page or journal, enter `/Extract Filtered Blocks` and select it.
+    - Or click the toolbar button/icon.
+    - The dialog opens with your last-used settings prefilled (on first use, the Primary Tag is set to the current page). The prefilled tag is preselected, so you can either type immediately to replace it or press `Cmd/Ctrl+Enter` to re-run the previous extraction as-is.
 2. **Enter Parameters**
     - **Primary Tag (required):** Enter the tag name to search.
         - Do not include the `#` symbol.
@@ -93,24 +105,28 @@ The **Block Extractor** plugin is a plugin that allows you to **extract things l
         - Use the autocomplete list to select.
         - Example: "issue, resolve, -hold"
             - This excludes blocks containing "hold" from all blocks referencing "projectX", then filters for those containing "issue" or "resolve".
-    - **Filter Mode:** Set the condition if multiple keywords are entered.
-        - **AND:** Only blocks including all entered keywords are extracted.
-        - **OR:** All blocks containing at least one of the keywords are extracted.
-    - **Sort Field:** Set the sorting property for the extracted blocks.
+    - **Any / All (next to Filter Keywords):** Sets the condition if multiple keywords are entered.
+        - **Any:** All blocks containing at least one of the keywords are extracted (OR).
+        - **All:** Only blocks including all entered keywords are extracted (AND).
+    - **Sort By:** Set the sorting property for the extracted blocks.
         - If left blank, defaults to file name (page name).
         - Supports all properties used in your Logseq graph, as well as system properties.
         - Note: Only one sort field is supported.
-    - **Sort Order:** Choose the sorting order.
-        - **Ascending:** A → Z or 1 → 9.
-        - **Descending:** Z → A or 9 → 1.
+    - **A→Z / Z→A (next to Sort By):** Choose the sorting order.
+        - **A→Z:** Ascending (A → Z or 1 → 9).
+        - **Z→A:** Descending (Z → A or 9 → 1).
         - Both alphabetic and numeric sorting are supported.
-    - **Link Replacement:** You can replace the link characters `[[`, `]]` of Logseq in both the extracted blocks and the included original body content.
-        - You can enter `**` for Opening Symbol and Closing Symbol respectively, or `==` to replace them with bold, highlight, etc.
-    - **Toggles (Hierarchy & Content Options):**
-        - **Exclude Parents:** Check this to include only the targeted block and its children. If unchecked, it will export the immediate parent blocks together (similar to Logseq's "Linked References" view).
+    - **Advanced (collapsed by default):** Click the header — or press `Enter`/`Space` while it is focused — to expand. When collapsed, chips on the header show its current settings.
+        - **Link Replacement:** Controls how Logseq links `[[...]]` appear in the exported file.
+            - Leave both fields empty to use the default: links become **bold** (`**...**`).
+            - Enter your own symbols (e.g., `==` and `==` for highlight) to customize.
+            - Enter `[[` and `]]` to keep the original Logseq syntax.
+        - **Plain text:** Check this to remove the brackets entirely (`[[abc]]` → `abc`). The replacement fields are disabled while this is checked.
+        - **Exclude Parents:** Check this to include only the targeted block and its children. If unchecked, it will export the parent blocks together (similar to Logseq's "Linked References" view).
         - **Include Tag Body:** Check this to extract the full original content of the Primary Tag (page) itself and append it to the top of the exported file.
+    - **Filename Preview:** The exact filename of the export is previewed live at the bottom of the dialog as you type.
 3. **Run Extraction**
-    - Click the **Extract Blocks** button.
+    - Press **`Cmd/Ctrl+Enter`** or click the **Extract** button.
     - The plugin will:
 
         1. Query the Logseq database for blocks referencing the primary tag.
@@ -137,10 +153,11 @@ If a sort field is set:
 ```
 
 (Excluded keywords are not shown in the filename.)
-1. **Review the Downloaded Markdown**
+
+4. **Review the Downloaded Markdown**
     - Open the downloaded file with your favorite Markdown viewer or text editor.
     - Extracted content is organized using H2 headers for top-level blocks.
-2. **Sample Extracted Markdown Document**
+5. **Sample Extracted Markdown Document** (with the default link formatting, `[[links]]` are exported as **bold**)
 ```markdown
 # Extracting reference blocks project x
 
@@ -151,7 +168,7 @@ Search conditions:
 
 A total of 3 blocks found
 
-### Content of [[project X]]
+### Content of **project X**
 
 - This is the original content of the project X page.
 1. Ordered list item 1
@@ -162,7 +179,7 @@ A total of 3 blocks found
 
 ## 1. Apr 14th, 2025
 
-- [[project X]] #resolved
+- **project X** #resolved
   - Wow, I finally solved it!!!
     - Here's how I solved it.
       - abcde
@@ -172,7 +189,7 @@ A total of 3 blocks found
 
 ## 2. Apr 12th, 2025
 
-- [[project X]] #issue
+- **project X** #issue
   - This is a really serious problem 2.
     - 12345
     - abcde
@@ -181,7 +198,7 @@ A total of 3 blocks found
 
 ## 3. Apr 9th, 2025
 
-- [[project X]] #issue
+- **project X** #issue
   - This is a really serious problem.
     - 12345
     - abcde
@@ -190,6 +207,22 @@ A total of 3 blocks found
 ---
 ```
 
+---
+
+## Keyboard Shortcuts
+
+| Key | Action |
+| --- | --- |
+| `Cmd/Ctrl+Shift+E` | Open the dialog (customizable in Logseq Settings → Keymap) |
+| `Tab` / `Shift+Tab` | Move between fields (a visible focus ring shows the current position) |
+| `←` `→` | Switch options within Any/All and A→Z/Z→A |
+| `↑` `↓` + `Enter` | Navigate and select autocomplete suggestions |
+| `Enter` / `Space` | Expand or collapse the Advanced section (while it is focused) |
+| `Space` | Toggle checkboxes |
+| `Cmd/Ctrl+Enter` | Run extraction (works from anywhere in the dialog) |
+| `Esc` | Close the autocomplete list first, then the dialog |
+
+> Note: `Enter` alone does **not** run the extraction — this prevents accidental exports while typing. Use `Cmd/Ctrl+Enter`.
 
 ---
 
@@ -200,10 +233,11 @@ A total of 3 blocks found
 - **No Blocks Found**
     - Make sure there actually are blocks referencing the tag/page.
     - If no results appear with filter keywords, try again without filters.
+- **The `Cmd/Ctrl+Shift+E` shortcut doesn't work**
+    - Another plugin or system shortcut may be using the same key. You can change the binding in Logseq Settings → Keymap.
 
 ---
 
 ## License
 
 This project is distributed under the **GPL-3.0 LICENSE**. You are free to use, modify, and distribute it under the same license, provided you credit the original author and publish any changes under the same terms.
-
