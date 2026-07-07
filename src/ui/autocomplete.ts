@@ -76,7 +76,7 @@ function setupFieldAutoComplete(inputId: any, suggestionsId: any, pages: any, mu
             item.className = 'suggestion-item';
             item.dataset.index = String(index);
             item.dataset.page = searchTerm.startsWith('-') ? '-' + page : page;
-            item.style.cssText = 'padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;';
+            item.style.cssText = 'padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--ls-border-color, #eee); color: var(--ls-primary-text-color, #333); font-size: 13px;';
             item.textContent = page;
             suggestions.appendChild(item);
         });
