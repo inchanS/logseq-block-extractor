@@ -1,3 +1,11 @@
+## 2.0.0 (2026-07-07)
+
+* feat: add full keyboard-only workflow and last-used settings recall to ([fecc66e](https://github.com/inchanS/logseq-block-extractor/commit/fecc66e))
+* feat: redesign dialog with collapsible advanced section and stronger ([879e98f](https://github.com/inchanS/logseq-block-extractor/commit/879e98f))
+* chore: generate release notes from conventional commits in publish ([5f5e958](https://github.com/inchanS/logseq-block-extractor/commit/5f5e958))
+
+
+
 ## <small>1.4.2 (2026-07-07)</small>
 
 * Update .gitignore ([8f51b94](https://github.com/inchanS/logseq-block-extractor/commit/8f51b94))

@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.2...v2.0.0) (2026-07-07)
+
+
+### Features
+
+* add full keyboard-only workflow and last-used settings recall to ([fecc66e](https://github.com/inchanS/logseq-block-extractor/commit/fecc66e446d41daa73ca31aa134c2c74ab10ff0e))
+* redesign dialog with collapsible advanced section and stronger ([879e98f](https://github.com/inchanS/logseq-block-extractor/commit/879e98fdb0e15cbdcf9fb618550b002f8c70c33f))
+
+
+
 ## [1.4.2](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.1...v1.4.2) (2026-07-07)
 
 
