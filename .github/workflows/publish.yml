@@ -40,8 +40,14 @@ jobs:
           mv dist ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip ${{ env.PLUGIN_NAME }}
 
+      # 직전 태그 이후의 커밋 메시지를 파싱해 릴리스 노트를 생성한다.
+      # -p angular: CHANGELOG.md와 동일한 "사용자용" 노트 (feat/fix/perf/revert만 포함)
+      # -p angular를 빼면 CHANGELOG-DEV.md처럼 chore 등 모든 커밋이 포함된 노트가 된다.
+      - name: Generate release notes
+        run: npx conventional-changelog -p angular -r 1 > RELEASE_NOTES.md
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md
