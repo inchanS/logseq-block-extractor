@@ -156,10 +156,12 @@ function renderFullHierarchy(
             content += indentStr + listPrefix + processedContent + '\n';
         }
 
-        // 타겟 블록에 도달했으면 모든 하위 블록 포함
+        // 타겟 블록에 도달했으면 하위 블록 포함.
+        // 주의: currentBlock은 findRootParent가 API로 재조회한 "필터링 안 된" 트리의 노드이므로,
+        // 반드시 키워드 필터가 적용된 targetBlock의 children을 렌더링해야 한다.
         if (currentBlock.id === targetBlock.id) {
-            if (currentBlock.children && Array.isArray(currentBlock.children)) {
-                currentBlock.children
+            if (targetBlock.children && Array.isArray(targetBlock.children)) {
+                targetBlock.children
                     .filter(isBlockEntity)
                     .forEach((child: BlockEntity) => {
                         content += renderBlockWithChildren(child, {

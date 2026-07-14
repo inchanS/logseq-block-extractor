@@ -60,4 +60,42 @@ describe('filterBlocksByKeyword', () => {
         const parent = block('daily note', [block('random')]);
         expect(filterBlocksByKeyword(parent, ['coding'])).toBeNull();
     });
+
+    it('include 매칭된 블록의 하위에서도 제외 키워드가 적용됨', () => {
+        const parent = block('coding note', [
+            block('sub task hold', [block('grandchild of excluded')]),
+            block('keep me'),
+        ]);
+
+        const result = filterBlocksByKeyword(parent, ['coding', '-hold']);
+        expect(result).not.toBeNull();
+        expect(result!.children).toHaveLength(1);
+        expect((result!.children![0] as BlockEntity).content).toBe('keep me');
+    });
+
+    it('블록 자체에 제외 키워드가 있으면 자손이 매칭되어도 트리째 제거됨', () => {
+        const parent = block('note hold', [block('coding tip')]);
+        expect(filterBlocksByKeyword(parent, ['coding', '-hold'])).toBeNull();
+    });
+
+    it('제외 키워드만 있는 경우: 해당 블록만 제거되고 나머지 계층은 유지', () => {
+        const parent = block('parent note', [
+            block('child hold'),
+            block('child ok', [block('nested hold'), block('nested ok')]),
+        ]);
+
+        const result = filterBlocksByKeyword(parent, ['-hold']);
+        expect(result).not.toBeNull();
+        expect(result!.children).toHaveLength(1);
+
+        const survivingChild = result!.children![0] as BlockEntity;
+        expect(survivingChild.content).toBe('child ok');
+        expect(survivingChild.children).toHaveLength(1);
+        expect((survivingChild.children![0] as BlockEntity).content).toBe('nested ok');
+    });
+
+    it('"-" 단독 입력은 빈 제외 키워드로 취급되어 무시됨', () => {
+        const parent = block('anything');
+        expect(filterBlocksByKeyword(parent, ['-'])).not.toBeNull();
+    });
 });
