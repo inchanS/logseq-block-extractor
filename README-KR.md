@@ -36,7 +36,10 @@
 
 Logseq 플러그인 마켓플레이스에서 **logseq-block-extractor**를 검색하여 설치합니다.
 
-> 참고: 이 플러그인은 현재 파일 기반(Markdown) 그래프만 지원합니다.(Logseq에서 개발중인, DB 기반 그래프는 지원하지 않습니다.)
+> 참고: 이 플러그인은 현재 파일 기반(Markdown) 그래프만 지원합니다.(Logseq에서 개발중인, DB 기반 그래프는 지원하지 않습니다.)  
+>   
+> **Logseq 2.0.x 베타 (DB 그래프) 이상의 버전을 사용하는 경우,**  
+> [block-extractor: Logseq DB version plugin](https://github.com/inchanS/logseq-block-extractor-db)을 사용해주세요.  
 
 ---
 

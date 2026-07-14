@@ -36,7 +36,10 @@
 
 Search for **logseq-block-extractor** in the Logseq Plugin Marketplace and install.
 
-> Note: This plugin currently supports only file-based (Markdown) graphs. (It does not support the database-based graphs.)
+> Note: This plugin currently supports only file-based (Markdown) graphs. (It does not support the database-based graphs.)  
+>   
+> **If you are using Logseq 2.0.x Beta (DB Graph) or later,**  
+> please use the [block-extractor: Logseq DB Version Plugin](https://github.com/inchanS/logseq-block-extractor-db).  
 
 ---
 
