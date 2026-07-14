@@ -1,3 +1,12 @@
+## <small>2.0.1 (2026-07-14)</small>
+
+* fix: apply keyword exclusion hierarchically and stop discarding filtered ([3010925](https://github.com/inchanS/logseq-block-extractor/commit/3010925))
+* Fix: generate release notes from new section only ([df57574](https://github.com/inchanS/logseq-block-extractor/commit/df57574))
+* Fix: README ([ed697f0](https://github.com/inchanS/logseq-block-extractor/commit/ed697f0))
+* docs: update README for v2.0 keyboard workflow and redesigned dialog ([ad78ae2](https://github.com/inchanS/logseq-block-extractor/commit/ad78ae2))
+
+
+
 ## 2.0.0 (2026-07-07)
 
 * feat: add full keyboard-only workflow and last-used settings recall to ([fecc66e](https://github.com/inchanS/logseq-block-extractor/commit/fecc66e))

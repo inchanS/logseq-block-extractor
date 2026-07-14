@@ -1,3 +1,12 @@
+## [2.0.1](https://github.com/inchanS/logseq-block-extractor/compare/v2.0.0...v2.0.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* apply keyword exclusion hierarchically and stop discarding filtered ([3010925](https://github.com/inchanS/logseq-block-extractor/commit/30109251e9dce82219b1bee573f3519dfd9a624f))
+
+
+
 # [2.0.0](https://github.com/inchanS/logseq-block-extractor/compare/v1.4.2...v2.0.0) (2026-07-07)
 
 

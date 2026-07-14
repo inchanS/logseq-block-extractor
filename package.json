@@ -1,6 +1,6 @@
 {
   "name": "logseq-block-extractor",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": " Filter the reference block for a specific page in Logseq and download it as a markdown file.",
   "type": "module",
   "main": "dist/index.html",
